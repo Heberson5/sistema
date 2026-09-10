@@ -1,3 +1,15 @@
+import {
+  Building2,
+  HeartHandshake,
+  Home,
+  KeyRound,
+  Landmark,
+  Package,
+  ShoppingCart,
+  Stethoscope,
+  type LucideIcon,
+} from 'lucide-react';
+
 export interface NavItem {
   label: string;
   href: string;
@@ -5,12 +17,14 @@ export interface NavItem {
 
 export interface NavGroup {
   label: string;
+  icon: LucideIcon;
   items: NavItem[];
 }
 
 export const navigation: NavGroup[] = [
   {
     label: 'Geral',
+    icon: Home,
     items: [
       { label: 'Dashboard', href: '/dashboard' },
       { label: 'Pessoas', href: '/pessoas' },
@@ -19,6 +33,7 @@ export const navigation: NavGroup[] = [
   },
   {
     label: 'Planos de Assistência',
+    icon: HeartHandshake,
     items: [
       { label: 'Planos', href: '/planos' },
       { label: 'Coberturas', href: '/planos/coberturas' },
@@ -28,6 +43,7 @@ export const navigation: NavGroup[] = [
   },
   {
     label: 'Cemitério',
+    icon: Landmark,
     items: [
       { label: 'Cemitérios', href: '/cemiterios' },
       { label: 'Quadras', href: '/cemiterios/quadras' },
@@ -43,6 +59,7 @@ export const navigation: NavGroup[] = [
   },
   {
     label: 'Produtos e Serviços',
+    icon: Package,
     items: [
       { label: 'Produtos', href: '/produtos' },
       { label: 'Serviços', href: '/servicos' },
@@ -50,10 +67,12 @@ export const navigation: NavGroup[] = [
   },
   {
     label: 'Vendas',
+    icon: ShoppingCart,
     items: [{ label: 'Vendas', href: '/vendas' }],
   },
   {
     label: 'Locações',
+    icon: KeyRound,
     items: [
       { label: 'Locações', href: '/locacoes' },
       { label: 'Salas Comerciais', href: '/locacoes/salas' },
@@ -62,14 +81,17 @@ export const navigation: NavGroup[] = [
   },
   {
     label: 'Atendimento Funerário',
+    icon: Building2,
     items: [
       { label: 'Óbitos', href: '/atendimento/obitos' },
       { label: 'Atendimentos', href: '/atendimento' },
     ],
   },
   {
-    label: 'Guias Médicas',
+    label: 'Atendimento Clínico',
+    icon: Stethoscope,
     items: [
+      { label: 'Agenda Clínica', href: '/atendimento-clinico' },
       { label: 'Guias Médicas', href: '/guias-medicas' },
       { label: 'Prestadores', href: '/guias-medicas/prestadores' },
       { label: 'Procedimentos', href: '/guias-medicas/procedimentos' },

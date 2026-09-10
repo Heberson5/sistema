@@ -11,14 +11,20 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
+  // Hash "morto" usado apenas para equalizar o tempo de resposta quando o
+  // e-mail não existe, evitando que o tempo da requisição revele se a conta existe.
+  private static readonly DUMMY_HASH =
+    '$2b$12$GWsADalmFL52KYvogrF.U.Vwrz35Z2g2HiFJYoaXMWEM6y9fkgFHC';
+
   async login(dto: LoginDto) {
     const usuario = await this.prisma.usuario.findUnique({ where: { email: dto.email } });
-    if (!usuario || !usuario.ativo) {
-      throw new UnauthorizedException('Credenciais inválidas');
-    }
 
-    const senhaValida = await bcrypt.compare(dto.senha, usuario.senhaHash);
-    if (!senhaValida) {
+    const senhaValida = await bcrypt.compare(
+      dto.senha,
+      usuario?.senhaHash ?? AuthService.DUMMY_HASH,
+    );
+
+    if (!usuario || !usuario.ativo || !senhaValida) {
       throw new UnauthorizedException('Credenciais inválidas');
     }
 

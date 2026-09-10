@@ -7,9 +7,15 @@ export interface UsuarioLogado {
   papel: string;
 }
 
+const cookieOptions = {
+  expires: 1,
+  sameSite: 'lax' as const,
+  secure: typeof window !== 'undefined' && window.location.protocol === 'https:',
+};
+
 export function salvarSessao(token: string, usuario: UsuarioLogado) {
-  Cookies.set('token', token, { expires: 1 });
-  Cookies.set('usuario', JSON.stringify(usuario), { expires: 1 });
+  Cookies.set('token', token, cookieOptions);
+  Cookies.set('usuario', JSON.stringify(usuario), cookieOptions);
 }
 
 export function obterUsuario(): UsuarioLogado | null {

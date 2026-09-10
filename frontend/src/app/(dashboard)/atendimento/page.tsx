@@ -17,6 +17,11 @@ const statusLabel: Record<string, string> = {
   CONCLUIDO: 'Concluído',
   CANCELADO: 'Cancelado',
 };
+const statusBadge: Record<string, string> = {
+  EM_ANDAMENTO: 'bg-amber-500/10 text-amber-700 dark:text-amber-400',
+  CONCLUIDO: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400',
+  CANCELADO: 'bg-red-500/10 text-red-700 dark:text-red-400',
+};
 
 interface ItemForm {
   descricao: string;
@@ -132,42 +137,46 @@ export default function AtendimentosPage() {
 
   return (
     <div>
-      <div className="mb-4 flex items-center justify-between">
-        <h1 className="text-xl font-semibold text-gray-800">Atendimentos</h1>
-        <button onClick={openCreate} className="flex items-center gap-1 rounded-md bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700">
+      <div className="mb-5 flex items-center justify-between">
+        <h1 className="text-xl font-bold tracking-tight text-foreground">Atendimentos</h1>
+        <button onClick={openCreate} className="flex items-center gap-1.5 rounded-xl bg-brand-600 px-4 py-2 text-sm font-medium text-white shadow-soft transition-all hover:bg-brand-700 hover:shadow-elevated active:scale-[0.98]">
           <Plus size={16} /> Novo Atendimento
         </button>
       </div>
 
-      {error && !modalOpen && <div className="mb-3 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{error}</div>}
+      {error && !modalOpen && <div className="mb-4 rounded-xl border border-red-200 bg-red-50 px-3.5 py-2.5 text-sm text-red-700 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-400">{error}</div>}
 
-      <div className="overflow-x-auto rounded-lg border border-gray-200 bg-white">
-        <table className="min-w-full divide-y divide-gray-200 text-sm">
-          <thead className="bg-gray-50">
+      <div className="overflow-x-auto rounded-2xl border border-border bg-surface shadow-soft">
+        <table className="min-w-full divide-y divide-border text-sm">
+          <thead className="bg-surface-muted">
             <tr>
-              <th className="px-4 py-2 text-left font-medium text-gray-600">Número</th>
-              <th className="px-4 py-2 text-left font-medium text-gray-600">Tipo</th>
-              <th className="px-4 py-2 text-left font-medium text-gray-600">Falecido</th>
-              <th className="px-4 py-2 text-left font-medium text-gray-600">Responsável</th>
-              <th className="px-4 py-2 text-left font-medium text-gray-600">Status</th>
-              <th className="px-4 py-2" />
+              <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-subtle">Número</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-subtle">Tipo</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-subtle">Falecido</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-subtle">Responsável</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-subtle">Status</th>
+              <th className="px-4 py-3" />
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
-            {loading && <tr><td colSpan={6} className="px-4 py-6 text-center text-gray-400">Carregando...</td></tr>}
+          <tbody className="divide-y divide-border">
+            {loading && <tr><td colSpan={6} className="px-4 py-8 text-center text-subtle">Carregando...</td></tr>}
             {!loading && atendimentos.length === 0 && (
-              <tr><td colSpan={6} className="px-4 py-6 text-center text-gray-400">Nenhum atendimento encontrado</td></tr>
+              <tr><td colSpan={6} className="px-4 py-8 text-center text-subtle">Nenhum atendimento encontrado</td></tr>
             )}
             {!loading &&
               atendimentos.map((a) => (
-                <tr key={a.id} className="hover:bg-gray-50">
-                  <td className="px-4 py-2 font-medium text-gray-800">{a.numero}</td>
-                  <td className="px-4 py-2">{TIPOS.find((t) => t.value === a.tipoAtendimento)?.label}</td>
-                  <td className="px-4 py-2">{a.obito?.nomeFalecido ?? '-'}</td>
-                  <td className="px-4 py-2">{a.clienteResponsavel?.nome}</td>
-                  <td className="px-4 py-2">{statusLabel[a.status] ?? a.status}</td>
-                  <td className="px-4 py-2 text-right">
-                    <button onClick={() => excluir(a.id)} className="rounded p-1 text-red-600 hover:bg-red-50">
+                <tr key={a.id} className="transition-colors hover:bg-surface-hover">
+                  <td className="px-4 py-3 font-medium text-foreground">{a.numero}</td>
+                  <td className="px-4 py-3">{TIPOS.find((t) => t.value === a.tipoAtendimento)?.label}</td>
+                  <td className="px-4 py-3">{a.obito?.nomeFalecido ?? '-'}</td>
+                  <td className="px-4 py-3">{a.clienteResponsavel?.nome}</td>
+                  <td className="px-4 py-3">
+                    <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${statusBadge[a.status] ?? ''}`}>
+                      {statusLabel[a.status] ?? a.status}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 text-right">
+                    <button onClick={() => excluir(a.id)} className="flex h-8 w-8 items-center justify-center rounded-lg text-red-600 transition-colors hover:bg-red-500/10 dark:text-red-400">
                       <Trash2 size={16} />
                     </button>
                   </td>
@@ -178,12 +187,12 @@ export default function AtendimentosPage() {
       </div>
 
       <Modal open={modalOpen} title="Novo Atendimento" onClose={() => setModalOpen(false)}>
-        <form onSubmit={handleSubmit} className="space-y-3">
-          {error && <div className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{error}</div>}
+        <form onSubmit={handleSubmit} className="space-y-3.5">
+          {error && <div className="rounded-xl border border-red-200 bg-red-50 px-3.5 py-2.5 text-sm text-red-700 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-400">{error}</div>}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700">Óbito (opcional)</label>
-              <select value={obitoId} onChange={(e) => setObitoId(e.target.value)} className="w-full rounded-md border border-gray-300 px-3 py-1.5 text-sm">
+              <label className="mb-1.5 block text-sm font-medium text-muted">Óbito (opcional)</label>
+              <select value={obitoId} onChange={(e) => setObitoId(e.target.value)} className="w-full rounded-xl border border-border bg-surface px-3.5 py-2 text-sm text-foreground shadow-soft focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20">
                 <option value="">Nenhum</option>
                 {obitos.map((o) => (
                   <option key={o.id} value={o.id}>{o.nomeFalecido}</option>
@@ -191,8 +200,8 @@ export default function AtendimentosPage() {
               </select>
             </div>
             <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700">Tipo</label>
-              <select value={tipoAtendimento} onChange={(e) => setTipoAtendimento(e.target.value)} className="w-full rounded-md border border-gray-300 px-3 py-1.5 text-sm">
+              <label className="mb-1.5 block text-sm font-medium text-muted">Tipo</label>
+              <select value={tipoAtendimento} onChange={(e) => setTipoAtendimento(e.target.value)} className="w-full rounded-xl border border-border bg-surface px-3.5 py-2 text-sm text-foreground shadow-soft focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20">
                 {TIPOS.map((t) => (
                   <option key={t.value} value={t.value}>{t.label}</option>
                 ))}
@@ -200,8 +209,8 @@ export default function AtendimentosPage() {
             </div>
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">Responsável pelo atendimento *</label>
-            <select required value={clienteResponsavelId} onChange={(e) => setClienteResponsavelId(e.target.value)} className="w-full rounded-md border border-gray-300 px-3 py-1.5 text-sm">
+            <label className="mb-1.5 block text-sm font-medium text-muted">Responsável pelo atendimento *</label>
+            <select required value={clienteResponsavelId} onChange={(e) => setClienteResponsavelId(e.target.value)} className="w-full rounded-xl border border-border bg-surface px-3.5 py-2 text-sm text-foreground shadow-soft focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20">
               <option value="">Selecione...</option>
               {pessoas.map((p) => (
                 <option key={p.id} value={p.id}>{pessoaLabel(p)}</option>
@@ -211,44 +220,44 @@ export default function AtendimentosPage() {
 
           <div>
             <div className="mb-1 flex items-center justify-between">
-              <label className="text-sm font-medium text-gray-700">Itens (produtos/serviços)</label>
-              <button type="button" onClick={addItem} className="text-xs text-blue-600 hover:underline">+ adicionar item</button>
+              <label className="text-sm font-medium text-muted">Itens (produtos/serviços)</label>
+              <button type="button" onClick={addItem} className="text-xs font-medium text-brand-600 hover:underline dark:text-brand-400">+ adicionar item</button>
             </div>
             <div className="space-y-2">
               {itens.map((item, idx) => (
-                <div key={idx} className="flex items-end gap-2 rounded-md border border-gray-200 p-2">
+                <div key={idx} className="flex items-end gap-2 rounded-xl border border-border bg-surface-muted/50 p-2.5">
                   <div className="flex-1">
-                    <label className="text-xs text-gray-500">Produto</label>
+                    <label className="text-xs text-subtle">Produto</label>
                     <select
                       value={item.produtoId ?? ''}
                       onChange={(e) => e.target.value && handleProdutoServico(idx, 'produtoId', e.target.value)}
-                      className="w-full rounded-md border border-gray-300 px-2 py-1 text-sm"
+                      className="w-full rounded-lg border border-border bg-surface px-2.5 py-1.5 text-sm text-foreground shadow-soft focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
                     >
                       <option value="">-</option>
                       {produtos.map((p) => <option key={p.id} value={p.id}>{p.nome}</option>)}
                     </select>
                   </div>
                   <div className="flex-1">
-                    <label className="text-xs text-gray-500">Serviço</label>
+                    <label className="text-xs text-subtle">Serviço</label>
                     <select
                       value={item.servicoId ?? ''}
                       onChange={(e) => e.target.value && handleProdutoServico(idx, 'servicoId', e.target.value)}
-                      className="w-full rounded-md border border-gray-300 px-2 py-1 text-sm"
+                      className="w-full rounded-lg border border-border bg-surface px-2.5 py-1.5 text-sm text-foreground shadow-soft focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
                     >
                       <option value="">-</option>
                       {servicos.map((s) => <option key={s.id} value={s.id}>{s.nome}</option>)}
                     </select>
                   </div>
                   <div className="w-16">
-                    <label className="text-xs text-gray-500">Qtd</label>
-                    <input type="number" min={1} value={item.quantidade} onChange={(e) => updateItem(idx, { quantidade: Number(e.target.value) })} className="w-full rounded-md border border-gray-300 px-2 py-1 text-sm" />
+                    <label className="text-xs text-subtle">Qtd</label>
+                    <input type="number" min={1} value={item.quantidade} onChange={(e) => updateItem(idx, { quantidade: Number(e.target.value) })} className="w-full rounded-lg border border-border bg-surface px-2.5 py-1.5 text-sm text-foreground shadow-soft focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20" />
                   </div>
                   <div className="w-28">
-                    <label className="text-xs text-gray-500">Valor Unit.</label>
-                    <input type="number" step="0.01" value={item.valorUnitario} onChange={(e) => updateItem(idx, { valorUnitario: Number(e.target.value) })} className="w-full rounded-md border border-gray-300 px-2 py-1 text-sm" />
+                    <label className="text-xs text-subtle">Valor Unit.</label>
+                    <input type="number" step="0.01" value={item.valorUnitario} onChange={(e) => updateItem(idx, { valorUnitario: Number(e.target.value) })} className="w-full rounded-lg border border-border bg-surface px-2.5 py-1.5 text-sm text-foreground shadow-soft focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20" />
                   </div>
                   {itens.length > 1 && (
-                    <button type="button" onClick={() => removeItem(idx)} className="mb-1 text-red-500 hover:text-red-700">
+                    <button type="button" onClick={() => removeItem(idx)} className="mb-1.5 text-red-500 transition-colors hover:text-red-600 dark:hover:text-red-400">
                       <Trash2 size={16} />
                     </button>
                   )}
@@ -256,11 +265,11 @@ export default function AtendimentosPage() {
               ))}
             </div>
           </div>
-          <p className="text-right text-sm font-semibold text-gray-700">Total: R$ {total.toFixed(2)}</p>
+          <p className="text-right text-sm font-semibold text-foreground">Total: R$ {total.toFixed(2)}</p>
 
           <div className="flex justify-end gap-2 pt-2">
-            <button type="button" onClick={() => setModalOpen(false)} className="rounded-md border border-gray-300 px-4 py-1.5 text-sm text-gray-700 hover:bg-gray-50">Cancelar</button>
-            <button type="submit" disabled={saving} className="rounded-md bg-blue-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-60">
+            <button type="button" onClick={() => setModalOpen(false)} className="rounded-xl border border-border bg-surface px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-surface-hover">Cancelar</button>
+            <button type="submit" disabled={saving} className="rounded-xl bg-brand-600 px-4 py-2 text-sm font-medium text-white shadow-soft transition-all hover:bg-brand-700 disabled:opacity-60">
               {saving ? 'Salvando...' : 'Salvar'}
             </button>
           </div>

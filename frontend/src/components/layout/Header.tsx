@@ -3,6 +3,13 @@
 import { Menu, LogOut } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { logout, obterUsuario, UsuarioLogado } from '@/lib/auth';
+import { ThemeToggle } from '@/components/ui/ThemeToggle';
+
+function iniciais(nome: string) {
+  const partes = nome.trim().split(/\s+/);
+  const primeiras = partes.slice(0, 2).map((p) => p[0]?.toUpperCase() ?? '');
+  return primeiras.join('') || '?';
+}
 
 export function Header({ onToggleSidebar }: { onToggleSidebar: () => void }) {
   const [usuario, setUsuario] = useState<UsuarioLogado | null>(null);
@@ -12,21 +19,36 @@ export function Header({ onToggleSidebar }: { onToggleSidebar: () => void }) {
   }, []);
 
   return (
-    <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-gray-200 bg-white px-4">
-      <button onClick={onToggleSidebar} className="rounded p-1 text-gray-600 hover:bg-gray-100 lg:hidden">
+    <header className="safe-top sticky top-0 z-30 flex h-16 items-center justify-between gap-3 border-b border-border bg-surface/85 px-4 backdrop-blur-lg sm:px-6">
+      <button
+        onClick={onToggleSidebar}
+        className="flex h-9 w-9 items-center justify-center rounded-xl text-muted transition-colors hover:bg-surface-muted hover:text-foreground lg:hidden"
+        aria-label="Abrir menu"
+      >
         <Menu size={20} />
       </button>
-      <div className="ml-auto flex items-center gap-3">
+
+      <div className="ml-auto flex items-center gap-2 sm:gap-3">
+        <ThemeToggle />
+
         {usuario && (
-          <span className="text-sm text-gray-600">
-            {usuario.nome} <span className="text-gray-400">({usuario.papel})</span>
-          </span>
+          <div className="flex items-center gap-2.5 rounded-full py-1 pl-1 pr-1 sm:border sm:border-border sm:pr-3">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-brand-500 to-indigo-700 text-xs font-bold text-white shadow-soft">
+              {iniciais(usuario.nome)}
+            </div>
+            <div className="hidden leading-tight sm:block">
+              <p className="text-sm font-medium text-foreground">{usuario.nome}</p>
+              <p className="text-[11px] text-subtle">{usuario.papel}</p>
+            </div>
+          </div>
         )}
+
         <button
           onClick={logout}
-          className="flex items-center gap-1 rounded-md px-2 py-1 text-sm text-gray-600 hover:bg-gray-100"
+          title="Sair"
+          className="flex h-9 w-9 items-center justify-center rounded-xl text-muted transition-colors hover:bg-red-500/10 hover:text-red-600 dark:hover:text-red-400"
         >
-          <LogOut size={16} /> Sair
+          <LogOut size={17} />
         </button>
       </div>
     </header>

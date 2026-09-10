@@ -4,6 +4,7 @@ import {
   StatusUnidade,
   TipoCobrancaPlano,
   TipoPessoa,
+  TipoGuia,
   TipoPrestador,
   TipoProcedimentoMedico,
 } from '@prisma/client';
@@ -15,7 +16,7 @@ async function main() {
   console.log('Iniciando seed...');
 
   // ---- Usuário admin ----
-  const senhaHash = await bcrypt.hash('admin123', 10);
+  const senhaHash = await bcrypt.hash('admin123', 12);
   await prisma.usuario.upsert({
     where: { email: 'admin@funeraria.com' },
     update: {},
@@ -33,7 +34,7 @@ async function main() {
     create: {
       nome: 'Vendedor Exemplo',
       email: 'vendedor@funeraria.com',
-      senhaHash: await bcrypt.hash('venda123', 10),
+      senhaHash: await bcrypt.hash('venda123', 12),
       papel: PapelUsuario.VENDEDOR,
     },
   });
@@ -184,7 +185,7 @@ async function main() {
   const laboratorio = await prisma.prestador.create({
     data: { nome: 'Laboratório Vida Clínica', tipo: TipoPrestador.LABORATORIO, cpfCnpj: '12345678000199' },
   });
-  await prisma.prestador.create({
+  const clinica = await prisma.prestador.create({
     data: { nome: 'Clínica Bem Estar', tipo: TipoPrestador.CLINICA, cpfCnpj: '98765432000188' },
   });
   await prisma.procedimentoMedico.createMany({
@@ -193,6 +194,29 @@ async function main() {
       { codigo: 'EX002', nome: 'Glicemia em Jejum', tipo: TipoProcedimentoMedico.EXAME_LABORATORIAL, valor: 25 },
       { codigo: 'CL001', nome: 'Consulta Clínico Geral', tipo: TipoProcedimentoMedico.CONSULTA, valor: 120 },
     ],
+  });
+
+  // ---- Agenda clínica (exames/consultas) ----
+  const emUmaSemana = new Date();
+  emUmaSemana.setDate(emUmaSemana.getDate() + 7);
+  await prisma.atendimentoClinico.create({
+    data: {
+      numero: 'AC000001',
+      beneficiarioId: beneficiario.id,
+      prestadorId: laboratorio.id,
+      tipoAtendimento: TipoGuia.EXAME,
+      dataAgendada: emUmaSemana,
+      observacoes: 'Jejum de 12 horas',
+    },
+  });
+  await prisma.atendimentoClinico.create({
+    data: {
+      numero: 'AC000002',
+      beneficiarioId: cliente.id,
+      prestadorId: clinica.id,
+      tipoAtendimento: TipoGuia.CONSULTA,
+      dataAgendada: emUmaSemana,
+    },
   });
 
   console.log('Seed concluído com sucesso.');

@@ -24,6 +24,11 @@ const UNIDADE_FIELD: Record<string, string> = {
 };
 
 const statusLabel: Record<string, string> = { ATIVA: 'Ativa', ENCERRADA: 'Encerrada', CANCELADA: 'Cancelada' };
+const statusBadge: Record<string, string> = {
+  ATIVA: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400',
+  ENCERRADA: 'bg-slate-500/10 text-slate-700 dark:text-slate-400',
+  CANCELADA: 'bg-red-500/10 text-red-700 dark:text-red-400',
+};
 
 function describeOpcao(tipo: string, opcao: any) {
   if (tipo === 'JAZIGO') return `Jazigo ${opcao.numero}`;
@@ -139,52 +144,56 @@ export default function LocacoesPage() {
 
   return (
     <div>
-      <div className="mb-4 flex items-center justify-between">
-        <h1 className="text-xl font-semibold text-gray-800">Locações</h1>
+      <div className="mb-5 flex items-center justify-between">
+        <h1 className="text-xl font-bold tracking-tight text-foreground">Locações</h1>
         <button
           onClick={openCreate}
-          className="flex items-center gap-1 rounded-md bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700"
+          className="flex items-center gap-1.5 rounded-xl bg-brand-600 px-4 py-2 text-sm font-medium text-white shadow-soft transition-all hover:bg-brand-700 hover:shadow-elevated active:scale-[0.98]"
         >
           <Plus size={16} /> Nova Locação
         </button>
       </div>
 
       {error && !modalOpen && (
-        <div className="mb-3 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{error}</div>
+        <div className="mb-4 rounded-xl border border-red-200 bg-red-50 px-3.5 py-2.5 text-sm text-red-700 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-400">{error}</div>
       )}
 
-      <div className="overflow-x-auto rounded-lg border border-gray-200 bg-white">
-        <table className="min-w-full divide-y divide-gray-200 text-sm">
-          <thead className="bg-gray-50">
+      <div className="overflow-x-auto rounded-2xl border border-border bg-surface shadow-soft">
+        <table className="min-w-full divide-y divide-border text-sm">
+          <thead className="bg-surface-muted">
             <tr>
-              <th className="px-4 py-2 text-left font-medium text-gray-600">Número</th>
-              <th className="px-4 py-2 text-left font-medium text-gray-600">Tipo</th>
-              <th className="px-4 py-2 text-left font-medium text-gray-600">Cliente</th>
-              <th className="px-4 py-2 text-left font-medium text-gray-600">Valor</th>
-              <th className="px-4 py-2 text-left font-medium text-gray-600">Status</th>
-              <th className="px-4 py-2" />
+              <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-subtle">Número</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-subtle">Tipo</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-subtle">Cliente</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-subtle">Valor</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-subtle">Status</th>
+              <th className="px-4 py-3" />
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
-            {loading && <tr><td colSpan={6} className="px-4 py-6 text-center text-gray-400">Carregando...</td></tr>}
+          <tbody className="divide-y divide-border">
+            {loading && <tr><td colSpan={6} className="px-4 py-8 text-center text-subtle">Carregando...</td></tr>}
             {!loading && locacoes.length === 0 && (
-              <tr><td colSpan={6} className="px-4 py-6 text-center text-gray-400">Nenhuma locação encontrada</td></tr>
+              <tr><td colSpan={6} className="px-4 py-8 text-center text-subtle">Nenhuma locação encontrada</td></tr>
             )}
             {!loading &&
               locacoes.map((l) => (
-                <tr key={l.id} className="hover:bg-gray-50">
-                  <td className="px-4 py-2 font-medium text-gray-800">{l.numero}</td>
-                  <td className="px-4 py-2">{TIPOS.find((t) => t.value === l.tipo)?.label ?? l.tipo}</td>
-                  <td className="px-4 py-2">{l.cliente?.nome}</td>
-                  <td className="px-4 py-2">R$ {Number(l.valor).toFixed(2)}</td>
-                  <td className="px-4 py-2">{statusLabel[l.status] ?? l.status}</td>
-                  <td className="px-4 py-2 text-right">
+                <tr key={l.id} className="transition-colors hover:bg-surface-hover">
+                  <td className="px-4 py-3 font-medium text-foreground">{l.numero}</td>
+                  <td className="px-4 py-3">{TIPOS.find((t) => t.value === l.tipo)?.label ?? l.tipo}</td>
+                  <td className="px-4 py-3">{l.cliente?.nome}</td>
+                  <td className="px-4 py-3">R$ {Number(l.valor).toFixed(2)}</td>
+                  <td className="px-4 py-3">
+                    <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${statusBadge[l.status] ?? ''}`}>
+                      {statusLabel[l.status] ?? l.status}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 text-right">
                     {l.status === 'ATIVA' && (
                       <div className="flex justify-end gap-2">
-                        <button onClick={() => encerrar(l.id)} title="Encerrar" className="rounded p-1 text-blue-600 hover:bg-blue-50">
+                        <button onClick={() => encerrar(l.id)} title="Encerrar" className="flex h-8 w-8 items-center justify-center rounded-lg text-brand-600 transition-colors hover:bg-brand-500/10 dark:text-brand-400">
                           <StopCircle size={16} />
                         </button>
-                        <button onClick={() => cancelar(l.id)} title="Cancelar" className="rounded p-1 text-red-600 hover:bg-red-50">
+                        <button onClick={() => cancelar(l.id)} title="Cancelar" className="flex h-8 w-8 items-center justify-center rounded-lg text-red-600 transition-colors hover:bg-red-500/10 dark:text-red-400">
                           <Ban size={16} />
                         </button>
                       </div>
@@ -197,19 +206,19 @@ export default function LocacoesPage() {
       </div>
 
       <Modal open={modalOpen} title="Nova Locação" onClose={() => setModalOpen(false)}>
-        <form onSubmit={handleSubmit} className="space-y-3">
-          {error && <div className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{error}</div>}
+        <form onSubmit={handleSubmit} className="space-y-3.5">
+          {error && <div className="rounded-xl border border-red-200 bg-red-50 px-3.5 py-2.5 text-sm text-red-700 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-400">{error}</div>}
           <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">Tipo *</label>
-            <select value={tipo} onChange={(e) => setTipo(e.target.value)} className="w-full rounded-md border border-gray-300 px-3 py-1.5 text-sm">
+            <label className="mb-1.5 block text-sm font-medium text-muted">Tipo *</label>
+            <select value={tipo} onChange={(e) => setTipo(e.target.value)} className="w-full rounded-xl border border-border bg-surface px-3.5 py-2 text-sm text-foreground shadow-soft focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20">
               {TIPOS.map((t) => (
                 <option key={t.value} value={t.value}>{t.label}</option>
               ))}
             </select>
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">Cliente *</label>
-            <select required value={clienteId} onChange={(e) => setClienteId(e.target.value)} className="w-full rounded-md border border-gray-300 px-3 py-1.5 text-sm">
+            <label className="mb-1.5 block text-sm font-medium text-muted">Cliente *</label>
+            <select required value={clienteId} onChange={(e) => setClienteId(e.target.value)} className="w-full rounded-xl border border-border bg-surface px-3.5 py-2 text-sm text-foreground shadow-soft focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20">
               <option value="">Selecione...</option>
               {pessoas.map((p) => (
                 <option key={p.id} value={p.id}>{pessoaLabel(p)}</option>
@@ -217,8 +226,8 @@ export default function LocacoesPage() {
             </select>
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">Item a locar *</label>
-            <select required value={unidadeId} onChange={(e) => handleUnidadeChange(e.target.value)} className="w-full rounded-md border border-gray-300 px-3 py-1.5 text-sm">
+            <label className="mb-1.5 block text-sm font-medium text-muted">Item a locar *</label>
+            <select required value={unidadeId} onChange={(e) => handleUnidadeChange(e.target.value)} className="w-full rounded-xl border border-border bg-surface px-3.5 py-2 text-sm text-foreground shadow-soft focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20">
               <option value="">Selecione...</option>
               {opcoesUnidade.map((o) => (
                 <option key={o.id} value={o.id}>{describeOpcao(tipo, o)}</option>
@@ -227,12 +236,12 @@ export default function LocacoesPage() {
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700">Valor *</label>
-              <input type="number" step="0.01" required value={valor} onChange={(e) => setValor(e.target.value)} className="w-full rounded-md border border-gray-300 px-3 py-1.5 text-sm" />
+              <label className="mb-1.5 block text-sm font-medium text-muted">Valor *</label>
+              <input type="number" step="0.01" required value={valor} onChange={(e) => setValor(e.target.value)} className="w-full rounded-xl border border-border bg-surface px-3.5 py-2 text-sm text-foreground shadow-soft focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20" />
             </div>
             <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700">Periodicidade</label>
-              <select value={periodicidade} onChange={(e) => setPeriodicidade(e.target.value)} className="w-full rounded-md border border-gray-300 px-3 py-1.5 text-sm">
+              <label className="mb-1.5 block text-sm font-medium text-muted">Periodicidade</label>
+              <select value={periodicidade} onChange={(e) => setPeriodicidade(e.target.value)} className="w-full rounded-xl border border-border bg-surface px-3.5 py-2 text-sm text-foreground shadow-soft focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20">
                 <option value="DIARIA">Diária</option>
                 <option value="SEMANAL">Semanal</option>
                 <option value="MENSAL">Mensal</option>
@@ -240,14 +249,14 @@ export default function LocacoesPage() {
             </div>
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">Nº de Parcelas</label>
-            <input type="number" min={1} value={numeroParcelas} onChange={(e) => setNumeroParcelas(e.target.value)} className="w-full rounded-md border border-gray-300 px-3 py-1.5 text-sm" />
+            <label className="mb-1.5 block text-sm font-medium text-muted">Nº de Parcelas</label>
+            <input type="number" min={1} value={numeroParcelas} onChange={(e) => setNumeroParcelas(e.target.value)} className="w-full rounded-xl border border-border bg-surface px-3.5 py-2 text-sm text-foreground shadow-soft focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20" />
           </div>
           <div className="flex justify-end gap-2 pt-2">
-            <button type="button" onClick={() => setModalOpen(false)} className="rounded-md border border-gray-300 px-4 py-1.5 text-sm text-gray-700 hover:bg-gray-50">
+            <button type="button" onClick={() => setModalOpen(false)} className="rounded-xl border border-border bg-surface px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-surface-hover">
               Cancelar
             </button>
-            <button type="submit" disabled={saving} className="rounded-md bg-blue-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-60">
+            <button type="submit" disabled={saving} className="rounded-xl bg-brand-600 px-4 py-2 text-sm font-medium text-white shadow-soft transition-all hover:bg-brand-700 disabled:opacity-60">
               {saving ? 'Salvando...' : 'Salvar'}
             </button>
           </div>

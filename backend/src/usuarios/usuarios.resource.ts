@@ -19,7 +19,7 @@ export class CreateUsuarioDto {
   email: string;
 
   @IsString()
-  @MinLength(6)
+  @MinLength(8)
   senha: string;
 
   @IsEnum(PapelUsuario)
@@ -42,7 +42,7 @@ export class UpdateUsuarioDto {
   email?: string;
 
   @IsString()
-  @MinLength(6)
+  @MinLength(8)
   @IsOptional()
   senha?: string;
 
@@ -100,7 +100,7 @@ export class UsuariosService {
 
   async create(dto: CreateUsuarioDto) {
     const { senha, ...rest } = dto;
-    const senhaHash = await bcrypt.hash(senha, 10);
+    const senhaHash = await bcrypt.hash(senha, 12);
     const usuario = await this.prisma.usuario.create({ data: { ...rest, senhaHash } });
     return sanitize(usuario);
   }
@@ -110,7 +110,7 @@ export class UsuariosService {
     const { senha, ...rest } = dto;
     const data: Record<string, unknown> = { ...rest };
     if (senha) {
-      data.senhaHash = await bcrypt.hash(senha, 10);
+      data.senhaHash = await bcrypt.hash(senha, 12);
     }
     const usuario = await this.prisma.usuario.update({ where: { id }, data });
     return sanitize(usuario);

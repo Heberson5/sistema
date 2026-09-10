@@ -71,13 +71,14 @@ model Pessoa {
   createdAt      DateTime   @default(now())
   updatedAt      DateTime   @updatedAt
 
-  contratosPlano    ContratoPlano[]             @relation("TitularContratos")
-  comoBeneficiario  ContratoPlanoBeneficiario[]
-  vendas            Venda[]                     @relation("ClienteVendas")
-  locacoes          Locacao[]                   @relation("ClienteLocacoes")
-  obitosResponsavel Obito[]                     @relation("ResponsavelObitos")
-  atendimentos      Atendimento[]               @relation("ClienteAtendimentos")
-  guiasMedicas      GuiaMedica[]                @relation("BeneficiarioGuias")
+  contratosPlano       ContratoPlano[]             @relation("TitularContratos")
+  comoBeneficiario     ContratoPlanoBeneficiario[]
+  vendas               Venda[]                     @relation("ClienteVendas")
+  locacoes             Locacao[]                   @relation("ClienteLocacoes")
+  obitosResponsavel    Obito[]                     @relation("ResponsavelObitos")
+  atendimentos         Atendimento[]               @relation("ClienteAtendimentos")
+  guiasMedicas         GuiaMedica[]                @relation("BeneficiarioGuias")
+  atendimentosClinicos AtendimentoClinico[]        @relation("BeneficiarioAtendimentosClinicos")
 
   @@map("pessoas")
 }
@@ -652,7 +653,8 @@ model Prestador {
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
 
-  guiasMedicas GuiaMedica[]
+  guiasMedicas         GuiaMedica[]
+  atendimentosClinicos AtendimentoClinico[]
 
   @@map("prestadores")
 }
@@ -703,10 +705,11 @@ model GuiaMedica {
   createdAt         DateTime   @default(now())
   updatedAt         DateTime   @updatedAt
 
-  beneficiario  Pessoa           @relation("BeneficiarioGuias", fields: [beneficiarioId], references: [id])
-  contratoPlano ContratoPlano?   @relation(fields: [contratoPlanoId], references: [id])
-  prestador     Prestador        @relation(fields: [prestadorId], references: [id])
-  itens         GuiaMedicaItem[]
+  beneficiario         Pessoa               @relation("BeneficiarioGuias", fields: [beneficiarioId], references: [id])
+  contratoPlano        ContratoPlano?       @relation(fields: [contratoPlanoId], references: [id])
+  prestador            Prestador            @relation(fields: [prestadorId], references: [id])
+  itens                GuiaMedicaItem[]
+  atendimentosClinicos AtendimentoClinico[]
 
   @@map("guias_medicas")
 }
@@ -723,4 +726,41 @@ model GuiaMedicaItem {
   procedimentoMedico ProcedimentoMedico @relation(fields: [procedimentoMedicoId], references: [id])
 
   @@map("guia_medica_itens")
+}
+
+// ============================================================
+// MÓDULO: ATENDIMENTO CLÍNICO (agenda de exames e consultas)
+// ============================================================
+//
+// Complementa as Guias Médicas: aqui é controlado o agendamento/andamento do
+// exame ou consulta em si (dia, prestador, status), podendo opcionalmente
+// vincular a guia médica já emitida para aquele atendimento.
+
+enum StatusAtendimentoClinico {
+  AGENDADO
+  CONFIRMADO
+  EM_ANDAMENTO
+  REALIZADO
+  CANCELADO
+}
+
+model AtendimentoClinico {
+  id              String                   @id @default(cuid())
+  numero          String                   @unique
+  beneficiarioId  String
+  prestadorId     String
+  guiaMedicaId    String?
+  tipoAtendimento TipoGuia
+  dataAgendada    DateTime
+  dataRealizada   DateTime?
+  status          StatusAtendimentoClinico @default(AGENDADO)
+  observacoes     String?
+  createdAt       DateTime                 @default(now())
+  updatedAt       DateTime                 @updatedAt
+
+  beneficiario Pessoa      @relation("BeneficiarioAtendimentosClinicos", fields: [beneficiarioId], references: [id])
+  prestador    Prestador   @relation(fields: [prestadorId], references: [id])
+  guiaMedica   GuiaMedica? @relation(fields: [guiaMedicaId], references: [id])
+
+  @@map("atendimentos_clinicos")
 }

@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { Pencil, Plus, Search, Trash2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Pencil, Plus, Search, Trash2 } from 'lucide-react';
 import { api, apiErrorMessage } from '@/lib/api';
 import { Modal } from '@/components/ui/Modal';
 import { FieldConfig, ResourceConfig, SelectOption } from '@/types/resource';
@@ -131,14 +131,16 @@ export function ResourceCrudPage({ config }: { config: ResourceConfig }) {
   }
 
   const tableFields = config.fields.filter((f) => !f.hideInTable);
+  const primaryField = tableFields[0];
+  const secondaryFields = tableFields.slice(1);
 
   return (
     <div>
-      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <h1 className="text-xl font-semibold text-gray-800">{config.title}</h1>
+      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <h1 className="text-xl font-bold tracking-tight text-foreground">{config.title}</h1>
         <div className="flex flex-col gap-2 sm:flex-row">
           <div className="relative">
-            <Search className="pointer-events-none absolute left-2.5 top-2.5 text-gray-400" size={16} />
+            <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-subtle" size={16} />
             <input
               value={search}
               onChange={(e) => {
@@ -146,12 +148,12 @@ export function ResourceCrudPage({ config }: { config: ResourceConfig }) {
                 setSearch(e.target.value);
               }}
               placeholder={config.searchPlaceholder ?? 'Buscar...'}
-              className="rounded-md border border-gray-300 py-1.5 pl-8 pr-3 text-sm focus:border-blue-500 focus:outline-none"
+              className="w-full rounded-xl border border-border bg-surface py-2 pl-9 pr-3 text-sm text-foreground shadow-soft placeholder:text-subtle focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 sm:w-56"
             />
           </div>
           <button
             onClick={openCreate}
-            className="flex items-center justify-center gap-1 rounded-md bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700"
+            className="flex items-center justify-center gap-1.5 rounded-xl bg-brand-600 px-4 py-2 text-sm font-medium text-white shadow-soft transition-all hover:bg-brand-700 hover:shadow-elevated active:scale-[0.98]"
           >
             <Plus size={16} /> {config.createLabel ?? 'Novo'}
           </button>
@@ -159,69 +161,114 @@ export function ResourceCrudPage({ config }: { config: ResourceConfig }) {
       </div>
 
       {error && !modalOpen && (
-        <div className="mb-3 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{error}</div>
+        <div className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-2.5 text-sm text-red-700 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-400">
+          {error}
+        </div>
       )}
 
-      <div className="overflow-x-auto rounded-lg border border-gray-200 bg-white">
-        <table className="min-w-full divide-y divide-gray-200 text-sm">
-          <thead className="bg-gray-50">
-            <tr>
-              {tableFields.map((f) => (
-                <th key={f.name} className="px-4 py-2 text-left font-medium text-gray-600">
-                  {f.label}
-                </th>
-              ))}
-              <th className="px-4 py-2" />
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-100">
-            {loading && (
-              <tr>
-                <td colSpan={tableFields.length + 1} className="px-4 py-6 text-center text-gray-400">
-                  Carregando...
-                </td>
-              </tr>
-            )}
-            {!loading && rows.length === 0 && (
-              <tr>
-                <td colSpan={tableFields.length + 1} className="px-4 py-6 text-center text-gray-400">
-                  Nenhum registro encontrado
-                </td>
-              </tr>
-            )}
-            {!loading &&
-              rows.map((row) => (
-                <tr key={row.id} className="hover:bg-gray-50">
-                  {tableFields.map((f) => (
-                    <td key={f.name} className="px-4 py-2 text-gray-700">
-                      {renderCell(f, row)}
-                    </td>
-                  ))}
-                  <td className="px-4 py-2 text-right">
-                    <div className="flex justify-end gap-2">
-                      <button
-                        onClick={() => openEdit(row)}
-                        className="rounded p-1 text-blue-600 hover:bg-blue-50"
-                        title="Editar"
-                      >
-                        <Pencil size={16} />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(row)}
-                        className="rounded p-1 text-red-600 hover:bg-red-50"
-                        title="Excluir"
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-          </tbody>
-        </table>
-      </div>
+      {loading && (
+        <div className="rounded-2xl border border-border bg-surface px-4 py-10 text-center text-sm text-subtle shadow-soft">
+          Carregando...
+        </div>
+      )}
 
-      <div className="mt-3 flex items-center justify-between text-sm text-gray-600">
+      {!loading && rows.length === 0 && (
+        <div className="rounded-2xl border border-dashed border-border bg-surface px-4 py-10 text-center text-sm text-subtle">
+          Nenhum registro encontrado
+        </div>
+      )}
+
+      {!loading && rows.length > 0 && (
+        <>
+          {/* Cards no mobile — sensação de app nativo em vez de tabela espremida */}
+          <div className="space-y-2.5 sm:hidden">
+            {rows.map((row) => (
+              <div
+                key={row.id}
+                className="rounded-2xl border border-border bg-surface p-4 shadow-soft transition-shadow active:shadow-elevated"
+              >
+                <div className="mb-2 flex items-start justify-between gap-2">
+                  <p className="min-w-0 truncate font-semibold text-foreground">
+                    {primaryField ? renderCell(primaryField, row) : row.id}
+                  </p>
+                  <div className="flex shrink-0 gap-1">
+                    <button
+                      onClick={() => openEdit(row)}
+                      className="flex h-8 w-8 items-center justify-center rounded-lg text-brand-600 hover:bg-brand-500/10 dark:text-brand-400"
+                    >
+                      <Pencil size={15} />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(row)}
+                      className="flex h-8 w-8 items-center justify-center rounded-lg text-red-600 hover:bg-red-500/10 dark:text-red-400"
+                    >
+                      <Trash2 size={15} />
+                    </button>
+                  </div>
+                </div>
+                <dl className="grid grid-cols-2 gap-x-3 gap-y-1.5 text-xs">
+                  {secondaryFields.map((f) => (
+                    <div key={f.name} className="min-w-0">
+                      <dt className="text-subtle">{f.label}</dt>
+                      <dd className="truncate font-medium text-muted">{renderCell(f, row)}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </div>
+            ))}
+          </div>
+
+          {/* Tabela no desktop */}
+          <div className="hidden overflow-x-auto rounded-2xl border border-border bg-surface shadow-soft sm:block">
+            <table className="min-w-full divide-y divide-border text-sm">
+              <thead className="bg-surface-muted">
+                <tr>
+                  {tableFields.map((f) => (
+                    <th
+                      key={f.name}
+                      className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-subtle"
+                    >
+                      {f.label}
+                    </th>
+                  ))}
+                  <th className="px-4 py-3" />
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border">
+                {rows.map((row) => (
+                  <tr key={row.id} className="transition-colors hover:bg-surface-hover">
+                    {tableFields.map((f) => (
+                      <td key={f.name} className="px-4 py-3 text-foreground">
+                        {renderCell(f, row)}
+                      </td>
+                    ))}
+                    <td className="px-4 py-3 text-right">
+                      <div className="flex justify-end gap-1">
+                        <button
+                          onClick={() => openEdit(row)}
+                          className="flex h-8 w-8 items-center justify-center rounded-lg text-brand-600 transition-colors hover:bg-brand-500/10 dark:text-brand-400"
+                          title="Editar"
+                        >
+                          <Pencil size={15} />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(row)}
+                          className="flex h-8 w-8 items-center justify-center rounded-lg text-red-600 transition-colors hover:bg-red-500/10 dark:text-red-400"
+                          title="Excluir"
+                        >
+                          <Trash2 size={15} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
+      )}
+
+      <div className="mt-4 flex items-center justify-between text-sm text-muted">
         <span>
           Página {page} de {totalPages}
         </span>
@@ -229,16 +276,16 @@ export function ResourceCrudPage({ config }: { config: ResourceConfig }) {
           <button
             disabled={page <= 1}
             onClick={() => setPage((p) => p - 1)}
-            className="rounded border border-gray-300 px-2 py-1 disabled:opacity-40"
+            className="flex h-9 w-9 items-center justify-center rounded-xl border border-border bg-surface text-foreground shadow-soft transition-colors hover:bg-surface-hover disabled:pointer-events-none disabled:opacity-40"
           >
-            Anterior
+            <ChevronLeft size={16} />
           </button>
           <button
             disabled={page >= totalPages}
             onClick={() => setPage((p) => p + 1)}
-            className="rounded border border-gray-300 px-2 py-1 disabled:opacity-40"
+            className="flex h-9 w-9 items-center justify-center rounded-xl border border-border bg-surface text-foreground shadow-soft transition-colors hover:bg-surface-hover disabled:pointer-events-none disabled:opacity-40"
           >
-            Próxima
+            <ChevronRight size={16} />
           </button>
         </div>
       </div>
@@ -248,13 +295,17 @@ export function ResourceCrudPage({ config }: { config: ResourceConfig }) {
         title={editing ? `Editar ${config.title}` : `Novo(a) ${config.title}`}
         onClose={() => setModalOpen(false)}
       >
-        <form onSubmit={handleSubmit} className="space-y-3">
-          {error && <div className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{error}</div>}
+        <form onSubmit={handleSubmit} className="space-y-3.5">
+          {error && (
+            <div className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-400">
+              {error}
+            </div>
+          )}
           {config.fields
             .filter((f) => !f.hideInForm)
             .map((field) => (
               <div key={field.name}>
-                <label className="mb-1 block text-sm font-medium text-gray-700">
+                <label className="mb-1.5 block text-sm font-medium text-muted">
                   {field.label}
                   {field.required && <span className="text-red-500"> *</span>}
                 </label>
@@ -265,14 +316,14 @@ export function ResourceCrudPage({ config }: { config: ResourceConfig }) {
             <button
               type="button"
               onClick={() => setModalOpen(false)}
-              className="rounded-md border border-gray-300 px-4 py-1.5 text-sm text-gray-700 hover:bg-gray-50"
+              className="rounded-xl border border-border bg-surface px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-surface-hover"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={saving}
-              className="rounded-md bg-blue-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-60"
+              className="rounded-xl bg-brand-600 px-4 py-2 text-sm font-medium text-white shadow-soft transition-all hover:bg-brand-700 disabled:opacity-60"
             >
               {saving ? 'Salvando...' : 'Salvar'}
             </button>
@@ -303,7 +354,7 @@ function renderInput(
   relationOptions: Record<string, SelectOption[]>,
 ) {
   const commonClass =
-    'w-full rounded-md border border-gray-300 px-3 py-1.5 text-sm focus:border-blue-500 focus:outline-none disabled:bg-gray-100';
+    'w-full rounded-xl border border-border bg-surface px-3.5 py-2 text-sm text-foreground shadow-soft placeholder:text-subtle focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 disabled:bg-surface-muted disabled:text-subtle';
   const value = form[field.name] ?? '';
 
   if (field.type === 'checkbox') {
@@ -313,7 +364,7 @@ function renderInput(
         checked={!!value}
         disabled={field.readOnlyInForm}
         onChange={(e) => setForm((prev) => ({ ...prev, [field.name]: e.target.checked }))}
-        className="h-4 w-4 rounded border-gray-300"
+        className="h-4 w-4 rounded border-border text-brand-600 focus:ring-brand-500/30"
       />
     );
   }
