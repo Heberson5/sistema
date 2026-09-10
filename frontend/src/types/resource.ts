@@ -42,4 +42,6 @@ export interface ResourceConfig {
   fields: FieldConfig[];
   searchPlaceholder?: string;
   createLabel?: string;
+  /** Papéis que podem criar/editar/excluir (espelha o backend). Sem isso, qualquer papel pode. */
+  writeRoles?: string[];
 }

@@ -12,7 +12,7 @@ import {
   Min,
   ValidateNested,
 } from 'class-validator';
-import { GuiaMedica, GuiaMedicaItem, StatusGuia, TipoGuia } from '@prisma/client';
+import { GuiaMedica, GuiaMedicaItem, PapelUsuario, StatusGuia, TipoGuia } from '@prisma/client';
 import { BaseCrudController } from '../common/base-crud.controller';
 import { BaseCrudService } from '../common/base-crud.service';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
@@ -102,7 +102,7 @@ export class GuiaMedicaController extends BaseCrudController<
   UpdateGuiaMedicaDto
 > {
   constructor(service: GuiaMedicaService) {
-    super(service);
+    super(service, [PapelUsuario.GERENTE, PapelUsuario.ATENDENTE]);
   }
 }
 
@@ -111,6 +111,6 @@ export class GuiaMedicaController extends BaseCrudController<
 @Controller('guia-medica-itens')
 export class GuiaMedicaItemController extends BaseCrudController<GuiaMedicaItem> {
   constructor(service: GuiaMedicaItemService) {
-    super(service);
+    super(service, [PapelUsuario.GERENTE, PapelUsuario.ATENDENTE]);
   }
 }

@@ -1,7 +1,7 @@
 import { Controller, Injectable, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { IsBoolean, IsInt, IsNumber, IsOptional, IsString, Min } from 'class-validator';
-import { Produto, Servico } from '@prisma/client';
+import { PapelUsuario, Produto, Servico } from '@prisma/client';
 import { BaseCrudController } from '../common/base-crud.controller';
 import { BaseCrudService } from '../common/base-crud.service';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
@@ -58,7 +58,7 @@ export class ServicosService extends BaseCrudService<Servico, CreateServicoDto, 
 @Controller('produtos')
 export class ProdutosController extends BaseCrudController<Produto, CreateProdutoDto, UpdateProdutoDto> {
   constructor(service: ProdutosService) {
-    super(service);
+    super(service, [PapelUsuario.GERENTE]);
   }
 }
 
@@ -67,6 +67,6 @@ export class ProdutosController extends BaseCrudController<Produto, CreateProdut
 @Controller('servicos')
 export class ServicosController extends BaseCrudController<Servico, CreateServicoDto, UpdateServicoDto> {
   constructor(service: ServicosService) {
-    super(service);
+    super(service, [PapelUsuario.GERENTE]);
   }
 }

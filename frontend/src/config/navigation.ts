@@ -13,6 +13,8 @@ import {
 export interface NavItem {
   label: string;
   href: string;
+  /** Papéis que podem ver este item. Sem isso, qualquer papel autenticado vê. */
+  roles?: string[];
 }
 
 export interface NavGroup {
@@ -28,7 +30,7 @@ export const navigation: NavGroup[] = [
     items: [
       { label: 'Dashboard', href: '/dashboard' },
       { label: 'Pessoas', href: '/pessoas' },
-      { label: 'Usuários', href: '/usuarios' },
+      { label: 'Usuários', href: '/usuarios', roles: ['ADMIN'] },
     ],
   },
   {

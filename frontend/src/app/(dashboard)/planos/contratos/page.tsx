@@ -3,8 +3,12 @@
 import { useEffect, useState } from 'react';
 import { Plus, ReceiptText, Trash2 } from 'lucide-react';
 import { api, apiErrorMessage } from '@/lib/api';
+import { podeEscrever } from '@/lib/auth';
 import { Modal } from '@/components/ui/Modal';
 import { pessoaLabel } from '@/config/resources';
+
+const CONTRATO_WRITE_ROLES = ['GERENTE', 'VENDEDOR'];
+const PARCELA_WRITE_ROLES = ['GERENTE', 'FINANCEIRO'];
 
 interface Plano {
   id: string;
@@ -159,16 +163,21 @@ export default function ContratosPlanoPage() {
     }
   }
 
+  const canWriteContrato = podeEscrever(CONTRATO_WRITE_ROLES);
+  const canWriteParcela = podeEscrever(PARCELA_WRITE_ROLES);
+
   return (
     <div>
       <div className="mb-5 flex items-center justify-between">
         <h1 className="text-xl font-bold tracking-tight text-foreground">Contratos de Plano</h1>
-        <button
-          onClick={openCreate}
-          className="flex items-center gap-1.5 rounded-xl bg-brand-600 px-4 py-2 text-sm font-medium text-white shadow-soft transition-all hover:bg-brand-700 hover:shadow-elevated active:scale-[0.98]"
-        >
-          <Plus size={16} /> Novo Contrato
-        </button>
+        {canWriteContrato && (
+          <button
+            onClick={openCreate}
+            className="flex items-center gap-1.5 rounded-xl bg-brand-600 px-4 py-2 text-sm font-medium text-white shadow-soft transition-all hover:bg-brand-700 hover:shadow-elevated active:scale-[0.98]"
+          >
+            <Plus size={16} /> Novo Contrato
+          </button>
+        )}
       </div>
 
       {error && !modalOpen && <div className={`mb-4 ${errorBox}`}>{error}</div>}
@@ -208,12 +217,14 @@ export default function ContratosPlanoPage() {
                     >
                       <ReceiptText size={15} />
                     </button>
-                    <button
-                      onClick={() => handleDelete(c.id)}
-                      className="flex h-8 w-8 items-center justify-center rounded-lg text-red-600 hover:bg-red-500/10 dark:text-red-400"
-                    >
-                      <Trash2 size={15} />
-                    </button>
+                    {canWriteContrato && (
+                      <button
+                        onClick={() => handleDelete(c.id)}
+                        className="flex h-8 w-8 items-center justify-center rounded-lg text-red-600 hover:bg-red-500/10 dark:text-red-400"
+                      >
+                        <Trash2 size={15} />
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
@@ -253,13 +264,15 @@ export default function ContratosPlanoPage() {
                         >
                           <ReceiptText size={15} />
                         </button>
-                        <button
-                          onClick={() => handleDelete(c.id)}
-                          className="flex h-8 w-8 items-center justify-center rounded-lg text-red-600 transition-colors hover:bg-red-500/10 dark:text-red-400"
-                          title="Excluir"
-                        >
-                          <Trash2 size={15} />
-                        </button>
+                        {canWriteContrato && (
+                          <button
+                            onClick={() => handleDelete(c.id)}
+                            className="flex h-8 w-8 items-center justify-center rounded-lg text-red-600 transition-colors hover:bg-red-500/10 dark:text-red-400"
+                            title="Excluir"
+                          >
+                            <Trash2 size={15} />
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -354,14 +367,16 @@ export default function ContratosPlanoPage() {
       >
         {parcelasModal && (
           <div>
-            <div className="mb-3 flex justify-end">
-              <button
-                onClick={() => gerarMaisParcelas(parcelasModal)}
-                className="rounded-xl border border-brand-600 px-3.5 py-1.5 text-sm font-medium text-brand-600 transition-colors hover:bg-brand-500/10 dark:text-brand-400"
-              >
-                Gerar mais 12 parcelas
-              </button>
-            </div>
+            {canWriteContrato && (
+              <div className="mb-3 flex justify-end">
+                <button
+                  onClick={() => gerarMaisParcelas(parcelasModal)}
+                  className="rounded-xl border border-brand-600 px-3.5 py-1.5 text-sm font-medium text-brand-600 transition-colors hover:bg-brand-500/10 dark:text-brand-400"
+                >
+                  Gerar mais 12 parcelas
+                </button>
+              </div>
+            )}
             <div className="overflow-hidden rounded-xl border border-border">
               <table className="w-full text-sm">
                 <thead className="bg-surface-muted">
@@ -381,7 +396,7 @@ export default function ContratosPlanoPage() {
                       <td className="px-3 py-2 text-foreground">R$ {Number(p.valor).toFixed(2)}</td>
                       <td className="px-3 py-2 text-muted">{parcelaStatusLabel[p.status] ?? p.status}</td>
                       <td className="px-3 py-2 text-right">
-                        {p.status === 'PENDENTE' && (
+                        {canWriteParcela && p.status === 'PENDENTE' && (
                           <button
                             onClick={() => marcarComoPaga(p)}
                             className="text-xs font-medium text-emerald-600 hover:underline dark:text-emerald-400"

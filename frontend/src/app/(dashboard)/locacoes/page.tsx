@@ -3,8 +3,11 @@
 import { useEffect, useState } from 'react';
 import { Ban, Plus, StopCircle } from 'lucide-react';
 import { api, apiErrorMessage } from '@/lib/api';
+import { podeEscrever } from '@/lib/auth';
 import { Modal } from '@/components/ui/Modal';
 import { pessoaLabel } from '@/config/resources';
+
+const LOCACAO_WRITE_ROLES = ['GERENTE', 'VENDEDOR'];
 
 const TIPOS = [
   { value: 'JAZIGO', label: 'Jazigo' },
@@ -142,16 +145,20 @@ export default function LocacoesPage() {
     }
   }
 
+  const canWrite = podeEscrever(LOCACAO_WRITE_ROLES);
+
   return (
     <div>
       <div className="mb-5 flex items-center justify-between">
         <h1 className="text-xl font-bold tracking-tight text-foreground">Locações</h1>
-        <button
-          onClick={openCreate}
-          className="flex items-center gap-1.5 rounded-xl bg-brand-600 px-4 py-2 text-sm font-medium text-white shadow-soft transition-all hover:bg-brand-700 hover:shadow-elevated active:scale-[0.98]"
-        >
-          <Plus size={16} /> Nova Locação
-        </button>
+        {canWrite && (
+          <button
+            onClick={openCreate}
+            className="flex items-center gap-1.5 rounded-xl bg-brand-600 px-4 py-2 text-sm font-medium text-white shadow-soft transition-all hover:bg-brand-700 hover:shadow-elevated active:scale-[0.98]"
+          >
+            <Plus size={16} /> Nova Locação
+          </button>
+        )}
       </div>
 
       {error && !modalOpen && (
@@ -188,7 +195,7 @@ export default function LocacoesPage() {
                     </span>
                   </td>
                   <td className="px-4 py-3 text-right">
-                    {l.status === 'ATIVA' && (
+                    {canWrite && l.status === 'ATIVA' && (
                       <div className="flex justify-end gap-2">
                         <button onClick={() => encerrar(l.id)} title="Encerrar" className="flex h-8 w-8 items-center justify-center rounded-lg text-brand-600 transition-colors hover:bg-brand-500/10 dark:text-brand-400">
                           <StopCircle size={16} />

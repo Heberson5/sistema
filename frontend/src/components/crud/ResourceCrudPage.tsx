@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { ChevronLeft, ChevronRight, Pencil, Plus, Search, Trash2 } from 'lucide-react';
 import { api, apiErrorMessage } from '@/lib/api';
+import { podeEscrever } from '@/lib/auth';
 import { Modal } from '@/components/ui/Modal';
 import { FieldConfig, ResourceConfig, SelectOption } from '@/types/resource';
 
@@ -35,6 +36,7 @@ export function ResourceCrudPage({ config }: { config: ResourceConfig }) {
   const [form, setForm] = useState<Row>(() => getInitialFormState(config.fields));
   const [relationOptions, setRelationOptions] = useState<Record<string, SelectOption[]>>({});
   const [saving, setSaving] = useState(false);
+  const canWrite = podeEscrever(config.writeRoles);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -151,12 +153,14 @@ export function ResourceCrudPage({ config }: { config: ResourceConfig }) {
               className="w-full rounded-xl border border-border bg-surface py-2 pl-9 pr-3 text-sm text-foreground shadow-soft placeholder:text-subtle focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 sm:w-56"
             />
           </div>
-          <button
-            onClick={openCreate}
-            className="flex items-center justify-center gap-1.5 rounded-xl bg-brand-600 px-4 py-2 text-sm font-medium text-white shadow-soft transition-all hover:bg-brand-700 hover:shadow-elevated active:scale-[0.98]"
-          >
-            <Plus size={16} /> {config.createLabel ?? 'Novo'}
-          </button>
+          {canWrite && (
+            <button
+              onClick={openCreate}
+              className="flex items-center justify-center gap-1.5 rounded-xl bg-brand-600 px-4 py-2 text-sm font-medium text-white shadow-soft transition-all hover:bg-brand-700 hover:shadow-elevated active:scale-[0.98]"
+            >
+              <Plus size={16} /> {config.createLabel ?? 'Novo'}
+            </button>
+          )}
         </div>
       </div>
 
@@ -191,20 +195,22 @@ export function ResourceCrudPage({ config }: { config: ResourceConfig }) {
                   <p className="min-w-0 truncate font-semibold text-foreground">
                     {primaryField ? renderCell(primaryField, row) : row.id}
                   </p>
-                  <div className="flex shrink-0 gap-1">
-                    <button
-                      onClick={() => openEdit(row)}
-                      className="flex h-8 w-8 items-center justify-center rounded-lg text-brand-600 hover:bg-brand-500/10 dark:text-brand-400"
-                    >
-                      <Pencil size={15} />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(row)}
-                      className="flex h-8 w-8 items-center justify-center rounded-lg text-red-600 hover:bg-red-500/10 dark:text-red-400"
-                    >
-                      <Trash2 size={15} />
-                    </button>
-                  </div>
+                  {canWrite && (
+                    <div className="flex shrink-0 gap-1">
+                      <button
+                        onClick={() => openEdit(row)}
+                        className="flex h-8 w-8 items-center justify-center rounded-lg text-brand-600 hover:bg-brand-500/10 dark:text-brand-400"
+                      >
+                        <Pencil size={15} />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(row)}
+                        className="flex h-8 w-8 items-center justify-center rounded-lg text-red-600 hover:bg-red-500/10 dark:text-red-400"
+                      >
+                        <Trash2 size={15} />
+                      </button>
+                    </div>
+                  )}
                 </div>
                 <dl className="grid grid-cols-2 gap-x-3 gap-y-1.5 text-xs">
                   {secondaryFields.map((f) => (
@@ -243,22 +249,24 @@ export function ResourceCrudPage({ config }: { config: ResourceConfig }) {
                       </td>
                     ))}
                     <td className="px-4 py-3 text-right">
-                      <div className="flex justify-end gap-1">
-                        <button
-                          onClick={() => openEdit(row)}
-                          className="flex h-8 w-8 items-center justify-center rounded-lg text-brand-600 transition-colors hover:bg-brand-500/10 dark:text-brand-400"
-                          title="Editar"
-                        >
-                          <Pencil size={15} />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(row)}
-                          className="flex h-8 w-8 items-center justify-center rounded-lg text-red-600 transition-colors hover:bg-red-500/10 dark:text-red-400"
-                          title="Excluir"
-                        >
-                          <Trash2 size={15} />
-                        </button>
-                      </div>
+                      {canWrite && (
+                        <div className="flex justify-end gap-1">
+                          <button
+                            onClick={() => openEdit(row)}
+                            className="flex h-8 w-8 items-center justify-center rounded-lg text-brand-600 transition-colors hover:bg-brand-500/10 dark:text-brand-400"
+                            title="Editar"
+                          >
+                            <Pencil size={15} />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(row)}
+                            className="flex h-8 w-8 items-center justify-center rounded-lg text-red-600 transition-colors hover:bg-red-500/10 dark:text-red-400"
+                            title="Excluir"
+                          >
+                            <Trash2 size={15} />
+                          </button>
+                        </div>
+                      )}
                     </td>
                   </tr>
                 ))}

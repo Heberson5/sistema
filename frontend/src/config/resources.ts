@@ -6,6 +6,7 @@ export const usuariosConfig: ResourceConfig = {
   title: 'Usuários',
   endpoint: '/usuarios',
   searchPlaceholder: 'Buscar por nome ou e-mail',
+  writeRoles: ['ADMIN'],
   fields: [
     { name: 'nome', label: 'Nome', type: 'text', required: true },
     { name: 'email', label: 'E-mail', type: 'email', required: true },
@@ -40,6 +41,7 @@ export const pessoasConfig: ResourceConfig = {
   title: 'Pessoas',
   endpoint: '/pessoas',
   searchPlaceholder: 'Buscar por nome, CPF/CNPJ ou e-mail',
+  writeRoles: ['GERENTE', 'ATENDENTE', 'VENDEDOR'],
   fields: [
     {
       name: 'tipo',
@@ -84,6 +86,7 @@ export const pessoasConfig: ResourceConfig = {
 export const planosConfig: ResourceConfig = {
   title: 'Planos',
   endpoint: '/planos',
+  writeRoles: ['GERENTE'],
   fields: [
     { name: 'nome', label: 'Nome', type: 'text', required: true },
     { name: 'descricao', label: 'Descrição', type: 'textarea', hideInTable: true },
@@ -106,6 +109,7 @@ export const planosConfig: ResourceConfig = {
 export const planoCoberturasConfig: ResourceConfig = {
   title: 'Coberturas de Plano',
   endpoint: '/plano-coberturas',
+  writeRoles: ['GERENTE'],
   fields: [
     { name: 'planoId', label: 'Plano', type: 'select', required: true, relation: { endpoint: '/planos', labelField: 'nome' }, hideInTable: true },
     { name: 'plano', label: 'Plano', hideInForm: true, type: 'text', formatTable: (v) => v?.nome ?? '-' },
@@ -118,6 +122,7 @@ export const planoCoberturasConfig: ResourceConfig = {
 export const beneficiariosConfig: ResourceConfig = {
   title: 'Beneficiários de Contrato',
   endpoint: '/contrato-plano-beneficiarios',
+  writeRoles: ['GERENTE', 'VENDEDOR'],
   fields: [
     {
       name: 'contratoPlanoId',
@@ -137,6 +142,7 @@ export const beneficiariosConfig: ResourceConfig = {
 export const cemiteriosConfig: ResourceConfig = {
   title: 'Cemitérios',
   endpoint: '/cemiterios',
+  writeRoles: ['GERENTE'],
   fields: [
     { name: 'nome', label: 'Nome', type: 'text', required: true },
     { name: 'cnpj', label: 'CNPJ', type: 'text', hideInTable: true },
@@ -154,6 +160,7 @@ export const cemiteriosConfig: ResourceConfig = {
 export const quadrasConfig: ResourceConfig = {
   title: 'Quadras',
   endpoint: '/quadras',
+  writeRoles: ['GERENTE'],
   fields: [
     { name: 'cemiterioId', label: 'Cemitério', type: 'select', required: true, hideInTable: true, relation: { endpoint: '/cemiterios', labelField: 'nome' } },
     { name: 'cemiterio', label: 'Cemitério', hideInForm: true, type: 'text', formatTable: (v) => v?.nome ?? '-' },
@@ -165,6 +172,7 @@ export const quadrasConfig: ResourceConfig = {
 export const alamedasConfig: ResourceConfig = {
   title: 'Alamedas',
   endpoint: '/alamedas',
+  writeRoles: ['GERENTE'],
   fields: [
     { name: 'quadraId', label: 'Quadra', type: 'select', required: true, hideInTable: true, relation: { endpoint: '/quadras', labelField: 'codigo' } },
     { name: 'quadra', label: 'Quadra', hideInForm: true, type: 'text', formatTable: (v) => v?.codigo ?? '-' },
@@ -176,6 +184,7 @@ export const alamedasConfig: ResourceConfig = {
 export const alasConfig: ResourceConfig = {
   title: 'Alas (Columbário)',
   endpoint: '/alas',
+  writeRoles: ['GERENTE'],
   fields: [
     { name: 'cemiterioId', label: 'Cemitério', type: 'select', required: true, hideInTable: true, relation: { endpoint: '/cemiterios', labelField: 'nome' } },
     { name: 'cemiterio', label: 'Cemitério', hideInForm: true, type: 'text', formatTable: (v) => v?.nome ?? '-' },
@@ -187,6 +196,7 @@ export const alasConfig: ResourceConfig = {
 export const blocosConfig: ResourceConfig = {
   title: 'Blocos (Ossuário)',
   endpoint: '/blocos',
+  writeRoles: ['GERENTE'],
   fields: [
     { name: 'cemiterioId', label: 'Cemitério', type: 'select', required: true, hideInTable: true, relation: { endpoint: '/cemiterios', labelField: 'nome' } },
     { name: 'cemiterio', label: 'Cemitério', hideInForm: true, type: 'text', formatTable: (v) => v?.nome ?? '-' },
@@ -198,6 +208,7 @@ export const blocosConfig: ResourceConfig = {
 export const tiposJazigoConfig: ResourceConfig = {
   title: 'Tipos de Jazigo',
   endpoint: '/tipos-jazigo',
+  writeRoles: ['GERENTE'],
   fields: [
     { name: 'nome', label: 'Nome', type: 'text', required: true },
     { name: 'capacidadeGavetas', label: 'Capacidade (gavetas)', type: 'number', defaultValue: 1 },
@@ -208,6 +219,7 @@ export const tiposJazigoConfig: ResourceConfig = {
 export const tiposColumbarioConfig: ResourceConfig = {
   title: 'Tipos de Columbário',
   endpoint: '/tipos-columbario',
+  writeRoles: ['GERENTE'],
   fields: [
     { name: 'nome', label: 'Nome', type: 'text', required: true },
     { name: 'capacidadeUrnas', label: 'Capacidade (urnas)', type: 'number', defaultValue: 1 },
@@ -228,6 +240,7 @@ export const jazigosConfig: ResourceConfig = {
   title: 'Jazigos',
   endpoint: '/jazigos',
   searchPlaceholder: 'Buscar por número',
+  writeRoles: ['GERENTE'],
   fields: [
     { name: 'alamedaId', label: 'Alameda', type: 'select', required: true, hideInTable: true, relation: { endpoint: '/alamedas', labelField: 'codigo' } },
     { name: 'alameda', label: 'Alameda', hideInForm: true, type: 'text', formatTable: (v) => v?.codigo ?? '-' },
@@ -244,6 +257,7 @@ export const columbariosConfig: ResourceConfig = {
   title: 'Columbários',
   endpoint: '/columbarios',
   searchPlaceholder: 'Buscar por número',
+  writeRoles: ['GERENTE'],
   fields: [
     { name: 'alaId', label: 'Ala', type: 'select', required: true, hideInTable: true, relation: { endpoint: '/alas', labelField: 'codigo' } },
     { name: 'ala', label: 'Ala', hideInForm: true, type: 'text', formatTable: (v) => v?.codigo ?? '-' },
@@ -260,6 +274,7 @@ export const ossuariosConfig: ResourceConfig = {
   title: 'Ossuários',
   endpoint: '/ossuarios',
   searchPlaceholder: 'Buscar por número',
+  writeRoles: ['GERENTE'],
   fields: [
     { name: 'blocoId', label: 'Bloco', type: 'select', required: true, hideInTable: true, relation: { endpoint: '/blocos', labelField: 'codigo' } },
     { name: 'bloco', label: 'Bloco', hideInForm: true, type: 'text', formatTable: (v) => v?.codigo ?? '-' },
@@ -273,6 +288,7 @@ export const ossuariosConfig: ResourceConfig = {
 export const produtosConfig: ResourceConfig = {
   title: 'Produtos',
   endpoint: '/produtos',
+  writeRoles: ['GERENTE'],
   fields: [
     { name: 'nome', label: 'Nome', type: 'text', required: true },
     { name: 'categoria', label: 'Categoria', type: 'text' },
@@ -286,6 +302,7 @@ export const produtosConfig: ResourceConfig = {
 export const servicosConfig: ResourceConfig = {
   title: 'Serviços',
   endpoint: '/servicos',
+  writeRoles: ['GERENTE'],
   fields: [
     { name: 'nome', label: 'Nome', type: 'text', required: true },
     { name: 'categoria', label: 'Categoria', type: 'text' },
@@ -298,6 +315,7 @@ export const servicosConfig: ResourceConfig = {
 export const salasComerciaisConfig: ResourceConfig = {
   title: 'Salas Comerciais',
   endpoint: '/salas-comerciais',
+  writeRoles: ['GERENTE'],
   fields: [
     { name: 'nome', label: 'Nome', type: 'text', required: true },
     { name: 'descricao', label: 'Descrição', type: 'textarea', hideInTable: true },
@@ -310,6 +328,7 @@ export const salasComerciaisConfig: ResourceConfig = {
 export const equipamentosOrtopedicosConfig: ResourceConfig = {
   title: 'Equipamentos Ortopédicos',
   endpoint: '/equipamentos-ortopedicos',
+  writeRoles: ['GERENTE'],
   fields: [
     { name: 'tipo', label: 'Tipo', type: 'text', required: true },
     { name: 'codigoPatrimonio', label: 'Código Patrimônio', type: 'text' },
@@ -323,6 +342,7 @@ export const obitosConfig: ResourceConfig = {
   title: 'Óbitos',
   endpoint: '/obitos',
   searchPlaceholder: 'Buscar por nome do falecido',
+  writeRoles: ['GERENTE', 'ATENDENTE'],
   fields: [
     { name: 'nomeFalecido', label: 'Nome do Falecido', type: 'text', required: true },
     { name: 'cpfFalecido', label: 'CPF do Falecido', type: 'text' },
@@ -339,6 +359,7 @@ export const obitosConfig: ResourceConfig = {
 export const prestadoresConfig: ResourceConfig = {
   title: 'Prestadores',
   endpoint: '/prestadores',
+  writeRoles: ['GERENTE', 'ATENDENTE'],
   fields: [
     { name: 'nome', label: 'Nome', type: 'text', required: true },
     { name: 'cpfCnpj', label: 'CPF/CNPJ', type: 'text' },
@@ -363,6 +384,7 @@ export const prestadoresConfig: ResourceConfig = {
 export const procedimentosMedicosConfig: ResourceConfig = {
   title: 'Procedimentos Médicos',
   endpoint: '/procedimentos-medicos',
+  writeRoles: ['GERENTE', 'ATENDENTE'],
   fields: [
     { name: 'codigo', label: 'Código', type: 'text' },
     { name: 'nome', label: 'Nome', type: 'text', required: true },

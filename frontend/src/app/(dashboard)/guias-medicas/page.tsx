@@ -3,8 +3,11 @@
 import { useEffect, useState } from 'react';
 import { Plus, Trash2 } from 'lucide-react';
 import { api, apiErrorMessage } from '@/lib/api';
+import { podeEscrever } from '@/lib/auth';
 import { Modal } from '@/components/ui/Modal';
 import { pessoaLabel } from '@/config/resources';
+
+const GUIA_WRITE_ROLES = ['GERENTE', 'ATENDENTE'];
 
 const statusLabel: Record<string, string> = {
   EMITIDA: 'Emitida',
@@ -121,14 +124,17 @@ export default function GuiasMedicasPage() {
   }
 
   const total = itens.reduce((acc, it) => acc + it.quantidade * it.valorUnitario, 0);
+  const canWrite = podeEscrever(GUIA_WRITE_ROLES);
 
   return (
     <div>
       <div className="mb-5 flex items-center justify-between">
         <h1 className="text-xl font-bold tracking-tight text-foreground">Guias Médicas</h1>
-        <button onClick={openCreate} className="flex items-center gap-1.5 rounded-xl bg-brand-600 px-4 py-2 text-sm font-medium text-white shadow-soft transition-all hover:bg-brand-700 hover:shadow-elevated active:scale-[0.98]">
-          <Plus size={16} /> Nova Guia
-        </button>
+        {canWrite && (
+          <button onClick={openCreate} className="flex items-center gap-1.5 rounded-xl bg-brand-600 px-4 py-2 text-sm font-medium text-white shadow-soft transition-all hover:bg-brand-700 hover:shadow-elevated active:scale-[0.98]">
+            <Plus size={16} /> Nova Guia
+          </button>
+        )}
       </div>
 
       {error && !modalOpen && <div className="mb-4 rounded-xl border border-red-200 bg-red-50 px-3.5 py-2.5 text-sm text-red-700 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-400">{error}</div>}
@@ -163,9 +169,11 @@ export default function GuiasMedicasPage() {
                     </span>
                   </td>
                   <td className="px-4 py-3 text-right">
-                    <button onClick={() => excluir(g.id)} className="flex h-8 w-8 items-center justify-center rounded-lg text-red-600 transition-colors hover:bg-red-500/10 dark:text-red-400">
-                      <Trash2 size={16} />
-                    </button>
+                    {canWrite && (
+                      <button onClick={() => excluir(g.id)} className="flex h-8 w-8 items-center justify-center rounded-lg text-red-600 transition-colors hover:bg-red-500/10 dark:text-red-400">
+                        <Trash2 size={16} />
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}

@@ -32,6 +32,19 @@ export function estaAutenticado(): boolean {
   return !!Cookies.get('token');
 }
 
+/**
+ * Espelha a checagem de permissão de escrita feita no backend
+ * (BaseCrudController.checkWriteAccess): sem `writeRoles` definido, todo
+ * papel autenticado pode escrever; ADMIN sempre pode.
+ */
+export function podeEscrever(writeRoles?: string[]): boolean {
+  if (!writeRoles || writeRoles.length === 0) return true;
+  const usuario = obterUsuario();
+  if (!usuario) return false;
+  if (usuario.papel === 'ADMIN') return true;
+  return writeRoles.includes(usuario.papel);
+}
+
 export function logout() {
   Cookies.remove('token');
   Cookies.remove('usuario');

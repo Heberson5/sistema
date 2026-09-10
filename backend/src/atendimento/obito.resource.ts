@@ -1,7 +1,7 @@
 import { Controller, Injectable, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { IsDateString, IsOptional, IsString } from 'class-validator';
-import { Obito } from '@prisma/client';
+import { Obito, PapelUsuario } from '@prisma/client';
 import { BaseCrudController } from '../common/base-crud.controller';
 import { BaseCrudService } from '../common/base-crud.service';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
@@ -42,6 +42,6 @@ export class ObitoService extends BaseCrudService<Obito, CreateObitoDto, UpdateO
 @Controller('obitos')
 export class ObitoController extends BaseCrudController<Obito, CreateObitoDto, UpdateObitoDto> {
   constructor(service: ObitoService) {
-    super(service);
+    super(service, [PapelUsuario.GERENTE, PapelUsuario.ATENDENTE]);
   }
 }

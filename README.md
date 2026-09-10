@@ -54,6 +54,30 @@ frontend/   Aplicação web em Next.js (React) + Tailwind CSS
 - Dependências auditadas e atualizadas (Nest 11, Next 16) — 0 vulnerabilidades
   conhecidas em produção no momento da última auditoria (`npm audit`).
 
+### Permissões por papel
+
+Leitura (listar/visualizar) é liberada para qualquer papel autenticado, pois
+vários módulos leem cadastros de outros (ex.: vendas lê jazigos, locações lê
+salas comerciais) independente de quem está operando. ADMIN sempre tem acesso
+total. Escrita (criar/editar/excluir e as ações extras como confirmar venda,
+encerrar locação, gerar parcelas) segue esta divisão padrão — ajustável em
+`backend/src/**/*.resource.ts` (parâmetro `writeRoles` no construtor do
+controller) e espelhada no frontend (`writeRoles` em `config/resources.ts` e
+nas constantes `*_WRITE_ROLES` das páginas dedicadas):
+
+| Módulo | Papéis com permissão de escrita |
+|---|---|
+| Usuários | ADMIN |
+| Pessoas | GERENTE, ATENDENTE, VENDEDOR |
+| Planos, Coberturas, Cemitério (estrutura e unidades), Produtos, Serviços, Salas Comerciais, Equip. Ortopédicos | GERENTE |
+| Contratos de Plano, Beneficiários, Vendas, Locações | GERENTE, VENDEDOR |
+| Parcelas (de contrato, venda ou locação) | GERENTE, FINANCEIRO |
+| Óbitos, Atendimentos, Prestadores, Procedimentos Médicos, Guias Médicas | GERENTE, ATENDENTE |
+
+A aplicação é reforçada no backend (`BaseCrudController.checkWriteAccess`,
+`RolesGuard`) — a interface apenas esconde ações que o backend recusaria,
+nunca é a única barreira.
+
 ### Mapeamento de módulos (app novo → referência iVertex)
 
 | Módulo no sistema novo         | Tabelas de referência no iVertex                              |

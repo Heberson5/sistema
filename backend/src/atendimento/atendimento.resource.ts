@@ -12,7 +12,7 @@ import {
   Min,
   ValidateNested,
 } from 'class-validator';
-import { Atendimento, AtendimentoItem, StatusAtendimento, TipoAtendimento } from '@prisma/client';
+import { Atendimento, AtendimentoItem, PapelUsuario, StatusAtendimento, TipoAtendimento } from '@prisma/client';
 import { BaseCrudController } from '../common/base-crud.controller';
 import { BaseCrudService } from '../common/base-crud.service';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
@@ -147,7 +147,7 @@ export class AtendimentoController extends BaseCrudController<
   UpdateAtendimentoDto
 > {
   constructor(service: AtendimentoService) {
-    super(service);
+    super(service, [PapelUsuario.GERENTE, PapelUsuario.ATENDENTE]);
   }
 }
 
@@ -160,6 +160,6 @@ export class AtendimentoItemController extends BaseCrudController<
   UpdateAtendimentoItemDto
 > {
   constructor(service: AtendimentoItemService) {
-    super(service);
+    super(service, [PapelUsuario.GERENTE, PapelUsuario.ATENDENTE]);
   }
 }

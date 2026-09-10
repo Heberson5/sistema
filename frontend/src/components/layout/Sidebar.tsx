@@ -5,10 +5,18 @@ import { usePathname } from 'next/navigation';
 import { ChevronDown } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { navigation } from '@/config/navigation';
+import { obterUsuario } from '@/lib/auth';
 
 export function Sidebar({ open, onNavigate }: { open: boolean; onNavigate?: () => void }) {
   const pathname = usePathname();
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
+  const papel = obterUsuario()?.papel;
+  const visibleGroups = navigation
+    .map((group) => ({
+      ...group,
+      items: group.items.filter((item) => !item.roles || (papel && item.roles.includes(papel))),
+    }))
+    .filter((group) => group.items.length > 0);
 
   useEffect(() => {
     setOpenGroups((prev) => {
@@ -43,7 +51,7 @@ export function Sidebar({ open, onNavigate }: { open: boolean; onNavigate?: () =
       </div>
 
       <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-3">
-        {navigation.map((group) => {
+        {visibleGroups.map((group) => {
           const GroupIcon = group.icon;
           const groupActive = group.items.some((item) => pathname === item.href);
           const isOpen = openGroups[group.label] ?? true;

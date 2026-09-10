@@ -19,6 +19,7 @@ import {
 import {
   Locacao,
   LocacaoParcela,
+  PapelUsuario,
   PeriodicidadeLocacao,
   StatusLocacao,
   StatusParcela,
@@ -27,6 +28,7 @@ import {
 } from '@prisma/client';
 import { BaseCrudController } from '../common/base-crud.controller';
 import { BaseCrudService } from '../common/base-crud.service';
+import { Roles } from '../common/decorators/roles.decorator';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { PrismaService } from '../prisma/prisma.service';
 
@@ -159,15 +161,17 @@ export class LocacaoParcelaService extends BaseCrudService<LocacaoParcela, never
 @Controller('locacoes')
 export class LocacaoController extends BaseCrudController<Locacao, CreateLocacaoDto, UpdateLocacaoDto> {
   constructor(private readonly locacaoService: LocacaoService) {
-    super(locacaoService);
+    super(locacaoService, [PapelUsuario.GERENTE, PapelUsuario.VENDEDOR]);
   }
 
   @Post(':id/encerrar')
+  @Roles(PapelUsuario.GERENTE, PapelUsuario.VENDEDOR)
   encerrar(@Param('id') id: string) {
     return this.locacaoService.encerrar(id, false);
   }
 
   @Post(':id/cancelar')
+  @Roles(PapelUsuario.GERENTE, PapelUsuario.VENDEDOR)
   cancelar(@Param('id') id: string) {
     return this.locacaoService.encerrar(id, true);
   }
@@ -178,6 +182,6 @@ export class LocacaoController extends BaseCrudController<Locacao, CreateLocacao
 @Controller('locacao-parcelas')
 export class LocacaoParcelaController extends BaseCrudController<LocacaoParcela, never, UpdateLocacaoParcelaDto> {
   constructor(service: LocacaoParcelaService) {
-    super(service);
+    super(service, [PapelUsuario.GERENTE, PapelUsuario.FINANCEIRO]);
   }
 }

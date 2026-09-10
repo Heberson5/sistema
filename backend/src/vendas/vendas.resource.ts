@@ -20,9 +20,18 @@ import {
   Min,
   ValidateNested,
 } from 'class-validator';
-import { StatusParcela, StatusUnidade, StatusVenda, TipoVenda, Venda, VendaParcela } from '@prisma/client';
+import {
+  PapelUsuario,
+  StatusParcela,
+  StatusUnidade,
+  StatusVenda,
+  TipoVenda,
+  Venda,
+  VendaParcela,
+} from '@prisma/client';
 import { BaseCrudController } from '../common/base-crud.controller';
 import { BaseCrudService } from '../common/base-crud.service';
+import { Roles } from '../common/decorators/roles.decorator';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { PrismaService } from '../prisma/prisma.service';
 
@@ -207,15 +216,17 @@ export class VendaParcelaService extends BaseCrudService<VendaParcela, never, Up
 @Controller('vendas')
 export class VendaController extends BaseCrudController<Venda, CreateVendaDto, UpdateVendaDto> {
   constructor(private readonly vendaService: VendaService) {
-    super(vendaService);
+    super(vendaService, [PapelUsuario.GERENTE, PapelUsuario.VENDEDOR]);
   }
 
   @Post(':id/confirmar')
+  @Roles(PapelUsuario.GERENTE, PapelUsuario.VENDEDOR)
   confirmar(@Param('id') id: string) {
     return this.vendaService.confirmar(id);
   }
 
   @Post(':id/cancelar')
+  @Roles(PapelUsuario.GERENTE, PapelUsuario.VENDEDOR)
   cancelar(@Param('id') id: string) {
     return this.vendaService.cancelar(id);
   }
@@ -226,6 +237,6 @@ export class VendaController extends BaseCrudController<Venda, CreateVendaDto, U
 @Controller('venda-parcelas')
 export class VendaParcelaController extends BaseCrudController<VendaParcela, never, UpdateVendaParcelaDto> {
   constructor(service: VendaParcelaService) {
-    super(service);
+    super(service, [PapelUsuario.GERENTE, PapelUsuario.FINANCEIRO]);
   }
 }

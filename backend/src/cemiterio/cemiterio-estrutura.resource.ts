@@ -1,7 +1,7 @@
 import { Controller, Injectable, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { IsBoolean, IsOptional, IsString } from 'class-validator';
-import { Ala, Alameda, Bloco, Cemiterio, Quadra } from '@prisma/client';
+import { Ala, Alameda, Bloco, Cemiterio, PapelUsuario, Quadra } from '@prisma/client';
 import { BaseCrudController } from '../common/base-crud.controller';
 import { BaseCrudService } from '../common/base-crud.service';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
@@ -120,7 +120,7 @@ export class BlocoService extends BaseCrudService<Bloco, CreateBlocoDto, UpdateB
 @Controller('cemiterios')
 export class CemiterioController extends BaseCrudController<Cemiterio, CreateCemiterioDto, UpdateCemiterioDto> {
   constructor(service: CemiterioService) {
-    super(service);
+    super(service, [PapelUsuario.GERENTE]);
   }
 }
 
@@ -129,7 +129,7 @@ export class CemiterioController extends BaseCrudController<Cemiterio, CreateCem
 @Controller('quadras')
 export class QuadraController extends BaseCrudController<Quadra, CreateQuadraDto, UpdateQuadraDto> {
   constructor(service: QuadraService) {
-    super(service);
+    super(service, [PapelUsuario.GERENTE]);
   }
 }
 
@@ -138,7 +138,7 @@ export class QuadraController extends BaseCrudController<Quadra, CreateQuadraDto
 @Controller('alamedas')
 export class AlamedaController extends BaseCrudController<Alameda, CreateAlamedaDto, UpdateAlamedaDto> {
   constructor(service: AlamedaService) {
-    super(service);
+    super(service, [PapelUsuario.GERENTE]);
   }
 }
 
@@ -147,7 +147,7 @@ export class AlamedaController extends BaseCrudController<Alameda, CreateAlameda
 @Controller('alas')
 export class AlaController extends BaseCrudController<Ala, CreateAlaDto, UpdateAlaDto> {
   constructor(service: AlaService) {
-    super(service);
+    super(service, [PapelUsuario.GERENTE]);
   }
 }
 
@@ -156,6 +156,6 @@ export class AlaController extends BaseCrudController<Ala, CreateAlaDto, UpdateA
 @Controller('blocos')
 export class BlocoController extends BaseCrudController<Bloco, CreateBlocoDto, UpdateBlocoDto> {
   constructor(service: BlocoService) {
-    super(service);
+    super(service, [PapelUsuario.GERENTE]);
   }
 }

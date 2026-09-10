@@ -1,7 +1,7 @@
 import { Controller, Injectable, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { IsEnum, IsNumber, IsOptional, IsString, Min } from 'class-validator';
-import { EquipamentoOrtopedico, SalaComercial, StatusUnidade } from '@prisma/client';
+import { EquipamentoOrtopedico, PapelUsuario, SalaComercial, StatusUnidade } from '@prisma/client';
 import { BaseCrudController } from '../common/base-crud.controller';
 import { BaseCrudService } from '../common/base-crud.service';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
@@ -68,7 +68,7 @@ export class SalaComercialController extends BaseCrudController<
   UpdateSalaComercialDto
 > {
   constructor(service: SalaComercialService) {
-    super(service);
+    super(service, [PapelUsuario.GERENTE]);
   }
 }
 
@@ -81,6 +81,6 @@ export class EquipamentoOrtopedicoController extends BaseCrudController<
   UpdateEquipamentoOrtopedicoDto
 > {
   constructor(service: EquipamentoOrtopedicoService) {
-    super(service);
+    super(service, [PapelUsuario.GERENTE]);
   }
 }

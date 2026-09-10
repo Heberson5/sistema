@@ -22,11 +22,13 @@ import {
   ContratoPlano,
   ContratoPlanoBeneficiario,
   ContratoPlanoParcela,
+  PapelUsuario,
   StatusContratoPlano,
   StatusParcela,
 } from '@prisma/client';
 import { BaseCrudController } from '../common/base-crud.controller';
 import { BaseCrudService } from '../common/base-crud.service';
+import { Roles } from '../common/decorators/roles.decorator';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { PrismaService } from '../prisma/prisma.service';
 
@@ -175,10 +177,11 @@ export class ContratoPlanoController extends BaseCrudController<
   UpdateContratoPlanoDto
 > {
   constructor(private readonly contratoService: ContratoPlanoService) {
-    super(contratoService);
+    super(contratoService, [PapelUsuario.GERENTE, PapelUsuario.VENDEDOR]);
   }
 
   @Post(':id/gerar-parcelas')
+  @Roles(PapelUsuario.GERENTE, PapelUsuario.VENDEDOR)
   gerarParcelas(@Param('id') id: string, @Query('meses') meses?: string) {
     return this.contratoService.gerarParcelas(id, meses ? Number(meses) : 12);
   }
@@ -193,7 +196,7 @@ export class BeneficiarioController extends BaseCrudController<
   UpdateBeneficiarioDto
 > {
   constructor(service: BeneficiarioService) {
-    super(service);
+    super(service, [PapelUsuario.GERENTE, PapelUsuario.VENDEDOR]);
   }
 }
 
@@ -206,6 +209,6 @@ export class ParcelaPlanoController extends BaseCrudController<
   UpdateParcelaDto
 > {
   constructor(service: ParcelaPlanoService) {
-    super(service);
+    super(service, [PapelUsuario.GERENTE, PapelUsuario.FINANCEIRO]);
   }
 }

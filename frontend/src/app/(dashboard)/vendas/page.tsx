@@ -3,8 +3,11 @@
 import { useEffect, useState } from 'react';
 import { Ban, CheckCircle2, Plus, Trash2 } from 'lucide-react';
 import { api, apiErrorMessage } from '@/lib/api';
+import { podeEscrever } from '@/lib/auth';
 import { Modal } from '@/components/ui/Modal';
 import { pessoaLabel } from '@/config/resources';
+
+const VENDA_WRITE_ROLES = ['GERENTE', 'VENDEDOR'];
 
 const TIPOS = [
   { value: 'JAZIGO', label: 'Jazigo' },
@@ -186,17 +189,20 @@ export default function VendasPage() {
   }
 
   const total = itens.reduce((acc, it) => acc + it.quantidade * it.valorUnitario, 0);
+  const canWrite = podeEscrever(VENDA_WRITE_ROLES);
 
   return (
     <div>
       <div className="mb-5 flex items-center justify-between">
         <h1 className="text-xl font-bold tracking-tight text-foreground">Vendas</h1>
-        <button
-          onClick={openCreate}
-          className="flex items-center gap-1.5 rounded-xl bg-brand-600 px-4 py-2 text-sm font-medium text-white shadow-soft transition-all hover:bg-brand-700 hover:shadow-elevated active:scale-[0.98]"
-        >
-          <Plus size={16} /> Nova Venda
-        </button>
+        {canWrite && (
+          <button
+            onClick={openCreate}
+            className="flex items-center gap-1.5 rounded-xl bg-brand-600 px-4 py-2 text-sm font-medium text-white shadow-soft transition-all hover:bg-brand-700 hover:shadow-elevated active:scale-[0.98]"
+          >
+            <Plus size={16} /> Nova Venda
+          </button>
+        )}
       </div>
 
       {error && !modalOpen && (
@@ -236,7 +242,7 @@ export default function VendasPage() {
                   </td>
                   <td className="px-4 py-3 text-right">
                     <div className="flex justify-end gap-2">
-                      {v.status === 'ORCAMENTO' && (
+                      {canWrite && v.status === 'ORCAMENTO' && (
                         <>
                           <button onClick={() => confirmar(v.id)} title="Confirmar" className="flex h-8 w-8 items-center justify-center rounded-lg text-emerald-600 transition-colors hover:bg-emerald-500/10 dark:text-emerald-400">
                             <CheckCircle2 size={16} />
@@ -246,7 +252,7 @@ export default function VendasPage() {
                           </button>
                         </>
                       )}
-                      {v.status === 'CONFIRMADA' && (
+                      {canWrite && v.status === 'CONFIRMADA' && (
                         <button onClick={() => cancelar(v.id)} title="Cancelar" className="flex h-8 w-8 items-center justify-center rounded-lg text-red-600 transition-colors hover:bg-red-500/10 dark:text-red-400">
                           <Ban size={16} />
                         </button>

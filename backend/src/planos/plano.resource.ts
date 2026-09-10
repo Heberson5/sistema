@@ -1,7 +1,7 @@
 import { Controller, Injectable, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { IsBoolean, IsEnum, IsInt, IsNumber, IsOptional, IsString, Min } from 'class-validator';
-import { Plano, PlanoCobertura, TipoCobrancaPlano } from '@prisma/client';
+import { PapelUsuario, Plano, PlanoCobertura, TipoCobrancaPlano } from '@prisma/client';
 import { BaseCrudController } from '../common/base-crud.controller';
 import { BaseCrudService } from '../common/base-crud.service';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
@@ -59,7 +59,7 @@ export class PlanoCoberturaService extends BaseCrudService<
 @Controller('planos')
 export class PlanoController extends BaseCrudController<Plano, CreatePlanoDto, UpdatePlanoDto> {
   constructor(service: PlanoService) {
-    super(service);
+    super(service, [PapelUsuario.GERENTE]);
   }
 }
 
@@ -72,6 +72,6 @@ export class PlanoCoberturaController extends BaseCrudController<
   UpdatePlanoCoberturaDto
 > {
   constructor(service: PlanoCoberturaService) {
-    super(service);
+    super(service, [PapelUsuario.GERENTE]);
   }
 }

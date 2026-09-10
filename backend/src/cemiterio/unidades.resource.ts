@@ -5,6 +5,7 @@ import {
   Columbario,
   Jazigo,
   Ossuario,
+  PapelUsuario,
   StatusUnidade,
   TipoColumbario,
   TipoJazigo,
@@ -141,7 +142,7 @@ export class OssuarioService extends BaseCrudService<Ossuario, CreateOssuarioDto
 @Controller('tipos-jazigo')
 export class TipoJazigoController extends BaseCrudController<TipoJazigo, CreateTipoJazigoDto, UpdateTipoJazigoDto> {
   constructor(service: TipoJazigoService) {
-    super(service);
+    super(service, [PapelUsuario.GERENTE]);
   }
 }
 
@@ -154,7 +155,7 @@ export class TipoColumbarioController extends BaseCrudController<
   UpdateTipoColumbarioDto
 > {
   constructor(service: TipoColumbarioService) {
-    super(service);
+    super(service, [PapelUsuario.GERENTE]);
   }
 }
 
@@ -163,7 +164,7 @@ export class TipoColumbarioController extends BaseCrudController<
 @Controller('jazigos')
 export class JazigoController extends BaseCrudController<Jazigo, CreateJazigoDto, UpdateJazigoDto> {
   constructor(service: JazigoService) {
-    super(service);
+    super(service, [PapelUsuario.GERENTE]);
   }
 }
 
@@ -172,7 +173,7 @@ export class JazigoController extends BaseCrudController<Jazigo, CreateJazigoDto
 @Controller('columbarios')
 export class ColumbarioController extends BaseCrudController<Columbario, CreateColumbarioDto, UpdateColumbarioDto> {
   constructor(service: ColumbarioService) {
-    super(service);
+    super(service, [PapelUsuario.GERENTE]);
   }
 }
 
@@ -181,6 +182,6 @@ export class ColumbarioController extends BaseCrudController<Columbario, CreateC
 @Controller('ossuarios')
 export class OssuarioController extends BaseCrudController<Ossuario, CreateOssuarioDto, UpdateOssuarioDto> {
   constructor(service: OssuarioService) {
-    super(service);
+    super(service, [PapelUsuario.GERENTE]);
   }
 }

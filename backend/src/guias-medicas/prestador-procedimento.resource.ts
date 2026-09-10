@@ -1,7 +1,13 @@
 import { Controller, Injectable, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { IsBoolean, IsEnum, IsNumber, IsOptional, IsString, Min } from 'class-validator';
-import { Prestador, ProcedimentoMedico, TipoPrestador, TipoProcedimentoMedico } from '@prisma/client';
+import {
+  PapelUsuario,
+  Prestador,
+  ProcedimentoMedico,
+  TipoPrestador,
+  TipoProcedimentoMedico,
+} from '@prisma/client';
 import { BaseCrudController } from '../common/base-crud.controller';
 import { BaseCrudService } from '../common/base-crud.service';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
@@ -64,7 +70,7 @@ export class ProcedimentoMedicoService extends BaseCrudService<
 @Controller('prestadores')
 export class PrestadorController extends BaseCrudController<Prestador, CreatePrestadorDto, UpdatePrestadorDto> {
   constructor(service: PrestadorService) {
-    super(service);
+    super(service, [PapelUsuario.GERENTE, PapelUsuario.ATENDENTE]);
   }
 }
 
@@ -77,6 +83,6 @@ export class ProcedimentoMedicoController extends BaseCrudController<
   UpdateProcedimentoMedicoDto
 > {
   constructor(service: ProcedimentoMedicoService) {
-    super(service);
+    super(service, [PapelUsuario.GERENTE, PapelUsuario.ATENDENTE]);
   }
 }
