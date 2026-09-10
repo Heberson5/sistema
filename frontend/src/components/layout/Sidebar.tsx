@@ -26,7 +26,7 @@ export function Sidebar({ open, onNavigate }: { open: boolean; onNavigate?: () =
 
   return (
     <aside
-      className={`fixed inset-y-0 left-0 z-40 flex w-72 transform flex-col border-r border-border bg-surface shadow-depth transition-transform duration-200 ease-out dark:shadow-depth-dark lg:translate-x-0 lg:shadow-none ${
+      className={`fixed inset-y-0 left-0 z-40 flex w-72 transform flex-col rounded-r-3xl border-r border-border bg-surface shadow-depth transition-transform duration-200 ease-out dark:shadow-depth-dark lg:translate-x-0 ${
         open ? 'translate-x-0' : '-translate-x-full'
       }`}
     >
