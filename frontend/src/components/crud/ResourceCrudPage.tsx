@@ -303,15 +303,19 @@ export function ResourceCrudPage({ config }: { config: ResourceConfig }) {
           )}
           {config.fields
             .filter((f) => !f.hideInForm)
-            .map((field) => (
-              <div key={field.name}>
-                <label className="mb-1.5 block text-sm font-medium text-muted">
-                  {field.label}
-                  {field.required && <span className="text-red-500"> *</span>}
-                </label>
-                {renderInput(field, form, setForm, relationOptions)}
-              </div>
-            ))}
+            .map((field) => {
+              const isRequired = field.required || (!editing && !!field.requiredOnCreate);
+              return (
+                <div key={field.name}>
+                  <label className="mb-1.5 block text-sm font-medium text-muted">
+                    {field.label}
+                    {isRequired && <span className="text-red-500"> *</span>}
+                  </label>
+                  {renderInput(field, form, setForm, relationOptions, isRequired)}
+                  {field.helperText && <p className="mt-1 text-xs text-subtle">{field.helperText}</p>}
+                </div>
+              );
+            })}
           <div className="flex justify-end gap-2 pt-2">
             <button
               type="button"
@@ -352,6 +356,7 @@ function renderInput(
   form: Row,
   setForm: (updater: (prev: Row) => Row) => void,
   relationOptions: Record<string, SelectOption[]>,
+  isRequired: boolean,
 ) {
   const commonClass =
     'w-full rounded-xl border border-border bg-surface px-3.5 py-2 text-sm text-foreground shadow-soft placeholder:text-subtle focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 disabled:bg-surface-muted disabled:text-subtle';
@@ -374,7 +379,7 @@ function renderInput(
       <textarea
         value={value}
         disabled={field.readOnlyInForm}
-        required={field.required}
+        required={isRequired}
         onChange={(e) => setForm((prev) => ({ ...prev, [field.name]: e.target.value }))}
         className={commonClass}
         rows={3}
@@ -388,7 +393,7 @@ function renderInput(
       <select
         value={value}
         disabled={field.readOnlyInForm}
-        required={field.required}
+        required={isRequired}
         onChange={(e) => setForm((prev) => ({ ...prev, [field.name]: e.target.value }))}
         className={commonClass}
       >
@@ -407,7 +412,8 @@ function renderInput(
       type={field.type}
       value={value}
       disabled={field.readOnlyInForm}
-      required={field.required}
+      required={isRequired}
+      minLength={field.minLength}
       onChange={(e) => setForm((prev) => ({ ...prev, [field.name]: e.target.value }))}
       className={commonClass}
       step={field.type === 'number' ? '0.01' : undefined}

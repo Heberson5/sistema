@@ -1,6 +1,7 @@
 export type FieldType =
   | 'text'
   | 'email'
+  | 'password'
   | 'number'
   | 'date'
   | 'select'
@@ -17,6 +18,10 @@ export interface FieldConfig {
   label: string;
   type: FieldType;
   required?: boolean;
+  /** Só é obrigatório ao criar (ex.: senha, que ao editar pode ficar em branco para não ser alterada). */
+  requiredOnCreate?: boolean;
+  minLength?: number;
+  helperText?: string;
   options?: SelectOption[];
   /** Popula as opções do select buscando outro endpoint (relacionamento). */
   relation?: {
