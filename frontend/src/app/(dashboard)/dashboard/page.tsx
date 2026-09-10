@@ -30,7 +30,7 @@ const cards: Card[] = [
   { label: 'Vendas', endpoint: '/vendas', href: '/vendas', icon: ShoppingCart, color: 'from-amber-500 to-orange-600' },
   { label: 'Locações ativas', endpoint: '/locacoes', href: '/locacoes', icon: KeyRound, color: 'from-violet-500 to-purple-600' },
   { label: 'Atendimentos', endpoint: '/atendimentos', href: '/atendimento', icon: Building2, color: 'from-slate-500 to-slate-700' },
-  { label: 'Atendimentos clínicos', endpoint: '/atendimentos-clinicos', href: '/atendimento-clinico', icon: Stethoscope, color: 'from-indigo-500 to-blue-700' },
+  { label: 'Guias médicas', endpoint: '/guias-medicas', href: '/guias-medicas', icon: Stethoscope, color: 'from-indigo-500 to-blue-700' },
 ];
 
 export default function DashboardPage() {

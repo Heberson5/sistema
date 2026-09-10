@@ -15,7 +15,6 @@ import { VendasModule } from './vendas/vendas.module';
 import { LocacoesModule } from './locacoes/locacoes.module';
 import { AtendimentoModule } from './atendimento/atendimento.module';
 import { GuiasMedicasModule } from './guias-medicas/guias-medicas.module';
-import { AtendimentoClinicoModule } from './atendimento-clinico/atendimento-clinico.module';
 
 @Module({
   imports: [
@@ -32,7 +31,6 @@ import { AtendimentoClinicoModule } from './atendimento-clinico/atendimento-clin
     LocacoesModule,
     AtendimentoModule,
     GuiasMedicasModule,
-    AtendimentoClinicoModule,
   ],
   providers: [
     { provide: APP_GUARD, useClass: ThrottlerGuard },

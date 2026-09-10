@@ -91,7 +91,6 @@ export const navigation: NavGroup[] = [
     label: 'Atendimento Clínico',
     icon: Stethoscope,
     items: [
-      { label: 'Agenda Clínica', href: '/atendimento-clinico' },
       { label: 'Guias Médicas', href: '/guias-medicas' },
       { label: 'Prestadores', href: '/guias-medicas/prestadores' },
       { label: 'Procedimentos', href: '/guias-medicas/procedimentos' },

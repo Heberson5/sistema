@@ -7,8 +7,8 @@ existente), reconstruído como aplicação web moderna. Cobre:
 - Venda de jazigos, columbários e ossuários
 - Locação de jazigos, salas comerciais e equipamentos ortopédicos
 - Atendimento funerário (óbitos, velório/sepultamento, cremação, translado)
-- Atendimento clínico: agenda de exames e consultas junto a prestadores, com
-  emissão de guias médicas (exames clínicos, laboratoriais e consultas)
+- Atendimento clínico: emissão de guias médicas para exames clínicos,
+  laboratoriais e consultas, junto a prestadores cadastrados
 - Cadastros de apoio: pessoas, produtos, serviços, prestadores, estrutura de cemitério
 
 Interface com tema claro/escuro/automático, cantos arredondados e camadas de
@@ -35,8 +35,9 @@ frontend/   Aplicação web em Next.js (React) + Tailwind CSS
 - **API**: Documentação automática via Swagger em `/api/docs`.
 - **Frontend**: Telas de CRUD para cadastros simples usam um componente genérico
   orientado a configuração (`ResourceCrudPage`); fluxos com regra de negócio
-  (vendas, locações, contratos de plano, atendimentos, guias médicas, agenda
-  clínica) têm páginas dedicadas.
+  (vendas, locações, contratos de plano, atendimentos, guias médicas) têm
+  páginas dedicadas. No menu, "Atendimento Clínico" agrupa Guias Médicas,
+  Prestadores e Procedimentos.
 - **Tema**: claro/escuro/automático via `ThemeProvider` (`frontend/src/contexts/ThemeContext.tsx`),
   com tokens de cor em CSS variables (`globals.css`) e persistência em `localStorage`.
 - **PWA-like**: manifest (`frontend/public/manifest.json`) e meta tags de app
@@ -124,8 +125,7 @@ backend/
     vendas/                 # Venda (com confirmação/cancelamento e baixa de unidade)
     locacoes/               # Sala Comercial, Equipamento Ortopédico, Locação
     atendimento/            # Óbito, Atendimento
-    guias-medicas/          # Prestador, Procedimento Médico, Guia Médica
-    atendimento-clinico/    # Agenda de exames/consultas (com concluir/cancelar)
+    guias-medicas/          # Prestador, Procedimento Médico, Guia Médica (Atendimento Clínico)
 ```
 
 Entidades de cadastro simples usam uma base genérica de CRUD
